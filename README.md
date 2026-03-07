@@ -86,3 +86,6 @@ devise (Gem): ユーザー認証およびセキュリティ機能を適切に実
 
 ## 画面遷移図
 https://www.figma.com/design/CoIman5RvxP4Tnw7X58ket/%E7%94%BB%E9%9D%A2%E9%81%B7%E7%A7%BB%E5%9B%B3?node-id=0-1&t=456ak7SYfMnTULhM-1
+
+## ER図
+https://mermaid.ai/app/projects/e75b2859-6ad6-4cf1-a61a-3664ce87df58/diagrams/7c4fdd18-dce5-4dc0-ae52-058c509540a7/share/invite/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkb2N1bWVudElEIjoiN2M0ZmRkMTgtZGNlNS00ZGMwLWFlNTItMDU4YzUwOTU0MGE3IiwiYWNjZXNzIjoiVmlldyIsImlhdCI6MTc3MjU0NTgzOH0.XoEaKsoI9Z1J9eqUqinU3FESoNBdeYTSaZ0HWKQhroE
