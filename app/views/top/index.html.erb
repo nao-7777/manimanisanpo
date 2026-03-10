@@ -1,0 +1,30 @@
+<%# 
+  h-screen で画面全体を覆い、ピンクからエメラルドへのグラデーションをかけます。
+  pt-24 は、固定ヘッダー(h-16)に文字が被らないための余白です。
+%>
+<div class="relative min-h-screen w-full flex flex-col justify-between p-8 pt-24 overflow-hidden" 
+     style="background: linear-gradient(180deg, #fce4ec 0%, #ffffff 40%, #a7ffeb 70%);">
+  
+  <%# 中央セクション %>
+  <div class="flex flex-col items-center gap-12 z-10">
+    <%# タイトル %>
+    <h1 class="text-4xl md:text-5xl font-black text-[#4db6ac] tracking-[0.15em] drop-shadow-[0_2px_4px_rgba(255,255,255,1)] text-center">
+      まにまに散歩
+    </h1>
+
+    <%# アプリ紹介カード（すりガラス風） %>
+    <div class="w-full max-w-[320px] aspect-[3/4] bg-white/30 backdrop-blur-xl rounded-[50px] flex flex-col items-center justify-center border border-white/60 shadow-2xl">
+      <p class="text-4xl font-black text-gray-600/60 tracking-tighter italic">アプリ紹介</p>
+      <div class="mt-4 w-12 h-1 bg-[#61c5a2]/30 rounded-full"></div>
+    </div>
+  </div>
+
+  <%# 下部リンク %>
+  <div class="w-full text-[12px] text-gray-500 font-bold space-y-2 z-10 pb-4">
+    <div class="flex gap-6">
+      <p class="hover:text-[#4db6ac] cursor-pointer">利用規約</p>
+      <p class="hover:text-[#4db6ac] cursor-pointer">プライバシーポリシー</p>
+    </div>
+    <p class="text-[10px] text-gray-400 font-normal italic">Everyday is an Adventure</p>
+  </div>
+</div>

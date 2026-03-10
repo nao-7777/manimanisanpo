@@ -1,18 +1,32 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>App</title>
+    <title>ManimaniSanpo</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
+  
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
-
-    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-    <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
   </head>
 
   <body>
-    <main class="container mx-auto mt-28 px-5 flex">
+    <% if user_signed_in? %>
+      <nav class="bg-white shadow-sm p-4">ログイン後のメニュー</nav>
+    <% else %>
+      <header class="fixed top-0 left-0 w-full flex justify-between items-center p-6 z-50">
+        <%= link_to root_path, class: "transition-transform hover:scale-105 active:scale-95" do %> 
+          <div class="bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-sm">
+            <%# あとで画像にするための仮置き（今はテキスト） %>
+            <span class="text-xs font-bold text-gray-400">ロゴ</span>
+          </div>
+        <% end %>
+        <%= link_to "ログイン", new_user_session_path, 
+            class: "px-6 py-2.5 text-white font-bold text-lg rounded-full transition-all hover:opacity-90 hover:shadow-lg shadow-md inline-block text-center",
+            style: "background-color: #65C7A4;" %>
+      </header>
+    <% end %>
+
+    <main>
       <%= yield %>
     </main>
   </body>

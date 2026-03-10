@@ -1,1 +1,6 @@
 @import "tailwindcss";
+
+/* 確実に存在するフォルダを、フルパス（絶対パス）で指定します */
+@source "/app/app/views/**/*.erb";
+@source "/app/app/helpers/**/*.rb";
+@source "/app/app/javascript/**/*.js";
