@@ -74,3 +74,9 @@ group :test do
 end
 
 gem "pg"
+
+gem "tailwindcss-rails"
+
+gem "devise"
+
+gem "kaminari"
