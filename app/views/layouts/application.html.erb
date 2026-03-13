@@ -2,23 +2,22 @@
 <html>
   <head>
     <title>ManimaniSanpo</title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-  
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   </head>
 
-  <body>
+  <%# 背景をbodyに固定することで、隙間が絶対に白くならないようにします %>
+  <body class="m-0 p-0 min-h-screen" style="background: linear-gradient(180deg, #ffe2ea 30%, #97DBC1 90%); background-attachment: fixed;">
+    
     <% if user_signed_in? %>
       <nav class="bg-white shadow-sm p-4">ログイン後のメニュー</nav>
     <% else %>
-      <header class="fixed top-0 left-0 w-full flex justify-between items-center p-6 z-50">
+      <header class="fixed top-0 left-0 w-full flex justify-between items-center p-6 z-50 bg-transparent">
         <%= link_to root_path, class: "transition-transform hover:scale-105 active:scale-95" do %> 
-          <div class="bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-sm">
-            <%# あとで画像にするための仮置き（今はテキスト） %>
-            <span class="text-xs font-bold text-gray-400">ロゴ</span>
-          </div>
+          <div class="bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-sm text-gray-400 font-bold text-xs">ロゴ</div>
         <% end %>
         <%= link_to "ログイン", new_user_session_path, 
             class: "px-6 py-2.5 text-white font-bold text-lg rounded-full transition-all hover:opacity-90 hover:shadow-lg shadow-md inline-block text-center",
@@ -27,7 +26,35 @@
     <% end %>
 
     <main>
+      <%# 通知エリアは各画面のカード内に移動したので、ここは yield だけ %>
       <%= yield %>
     </main>
+
+    <%# メール送信後のモーダルスクリプト %>
+    <% if flash[:sent_modal] %>
+      <script>
+        function showSentModal() {
+          Swal.fire({
+            title: 'メールを送信しました！',
+            html: 'パスワード再設定用のメールを送信しました。<br>メールに記載のURLからパスワードの再設定を行ってください。',
+            icon: 'success',
+            confirmButtonText: 'OK',
+            buttonsStyling: false,
+            didOpen: () => {
+              const popup = Swal.getPopup();
+              popup.style.borderRadius = '3rem';
+              const confirmButton = Swal.getConfirmButton();
+              confirmButton.style.backgroundColor = '#65C7A4';
+              confirmButton.style.color = '#ffffff';
+              confirmButton.style.borderRadius = '9999px';
+              confirmButton.style.padding = '12px 60px';
+              confirmButton.style.fontWeight = 'bold';
+              confirmButton.style.border = 'none';
+            }
+          });
+        }
+        document.addEventListener("turbo:load", showSentModal);
+      </script>
+    <% end %>
   </body>
 </html>

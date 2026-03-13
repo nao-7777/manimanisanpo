@@ -1,0 +1,25 @@
+<div class="min-h-screen pt-24 pb-12 flex flex-col items-center justify-center bg-gradient-to-b from-[#ffe2ea] via-[#ffe2ea] via-20% to-[#97DBC1]">
+  <div class="w-full max-w-md px-4 text-center">
+    
+    <div class="bg-white p-10 rounded-3xl shadow-lg border border-none bg-white/70 backdrop-blur-sm">
+      
+      <div class="mb-10 mt-10">
+        <p class="text-xl font-bold text-gray-700 leading-relaxed">
+          アカウント作成が<br>完了しました。
+        </p>
+      </div>
+
+      <div class="mb-10">
+        <p class="text-sm text-gray-500">こちらからログインしてください。</p>
+      </div>
+
+      <%# ログインページへのボタン %>
+      <div class="mb-6">
+        <%= link_to "ログインページ", new_user_session_path, 
+            class: "inline-block px-10 py-3 text-white font-bold text-lg rounded-full shadow-md transition-all hover:opacity-90 hover:shadow-lg",
+            style: "background-color: #65C7A4;" %>
+      </div>
+
+    </div>
+  </div>
+</div>

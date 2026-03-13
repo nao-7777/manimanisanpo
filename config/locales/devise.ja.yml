@@ -1,0 +1,25 @@
+ja:
+  devise:
+    confirmations:
+      confirmed: "アカウントを登録しました。"
+      send_instructions: "アカウントの確認方法を数分以内にメールで送信します。"
+      send_paranoid_instructions: "ご登録のメールアドレスが見つかった場合、アカウントの確認方法を数分以内にメールで送信します。"
+    failure:
+      already_authenticated: "既にログインしています。"
+      inactive: "アカウントが有効化されていません。"
+      invalid: "%{authentication_keys}またはパスワードが違います。"
+      not_found_in_database: "%{authentication_keys}またはパスワードが違います。"
+      locked: "アカウントがロックされています。"
+      timeout: "セッションがタイムアウトしました。もう一度ログインしてください。"
+      unauthenticated: "ログインまたは登録が必要です。"
+      unconfirmed: "メールアドレスの確認手続きを完了してください。"
+    passwords:
+      no_token: "このページにはアクセスできません。パスワード再設定メールのURLからアクセスしてください。"
+      send_instructions: "パスワードの再設定方法を数分以内にメールで送信します。"
+      send_paranoid_instructions: "ご登録のメールアドレスが見つかった場合、パスワードの再設定方法を数分以内にメールで送信します。"
+      updated: "パスワードが正しく変更されました。ログインしています。"
+      updated_not_active: "パスワードが正しく変更されました。"
+    sessions:
+      signed_in: "ログインしました。"
+      signed_out: "ログアウトしました。"
+      already_signed_out: "ログアウトしました。"

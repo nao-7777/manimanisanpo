@@ -79,3 +79,7 @@ gem "tailwindcss-rails"
 gem "devise"
 
 gem "kaminari"
+
+group :development do
+  gem 'letter_opener_web' # これを追記
+end
