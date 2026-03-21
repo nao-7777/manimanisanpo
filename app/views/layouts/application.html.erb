@@ -7,18 +7,17 @@
     <%= csp_meta_tag %>
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <%# --- 1. アイコンを表示するために追加 --- %>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   </head>
 
   <body class="m-0 p-0 min-h-screen" style="background: linear-gradient(180deg, #ffe2ea 30%, #97DBC1 90%); background-attachment: fixed;">
     
-    <%# --- 修正ポイント：content_for(:no_nav) が無いときだけ表示 --- %>
+    <%# --- ヘッダー（ログイン前） --- %>
     <% unless content_for?(:no_nav) %>
-      <% if user_signed_in? %>
-        <%# ログイン後の共通メニュー（今は空にしておきます） %>
-        <nav class="p-4 bg-transparent">
-          <%# ここに文字が入っていたので削除しました %>
-        </nav>
-      <% else %>
+      <% unless user_signed_in? %>
         <header class="fixed top-0 left-0 w-full flex justify-between items-center p-6 z-50 bg-transparent">
           <%= link_to root_path, class: "transition-transform hover:scale-105 active:scale-95" do %> 
             <div class="bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-sm text-gray-400 font-bold text-xs">ロゴ</div>
@@ -34,7 +33,14 @@
       <%= yield %>
     </main>
 
-    <%# メール送信後のモーダルスクリプト（そのまま） %>
+    <%# --- 2. ログイン後、かつ no_nav が指定されていないページでボトムナビを表示 --- %>
+    <% if user_signed_in? && !content_for?(:no_nav) %>
+      <%= render 'layouts/bottom_nav' %>
+    <% end %>
+
+    <%= turbo_frame_tag "modal" %>
+
+    <%# --- SweetAlert2 のスクリプト（そのまま） --- %>
     <% if flash[:sent_modal] %>
       <script>
         function showSentModal() {

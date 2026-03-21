@@ -1,0 +1,36 @@
+<%= turbo_frame_tag "modal" do %>
+  <%# 背景 %>
+  <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/20 backdrop-blur-md">
+    
+    <%# 💡 min-height を捨てて、py-16（上下の余白）で高さを出します %>
+    <div class="animate-in zoom-in duration-300 flex flex-col items-center border-none shadow-2xl"
+         style="background-color: rgba(255, 255, 255, 0.95); 
+                backdrop-filter: blur(8px);
+                width: 380px; 
+                border-radius: 40px; 
+                padding: 64px 40px;">
+      
+      <%# タイトル %>
+      <h2 class="text-2xl font-bold text-gray-800 mb-8 text-center leading-tight">
+        確認メールを送信しました
+      </h2>
+      
+      <%# 説明文 %>
+      <div class="text-gray-600 leading-relaxed text-center text-sm mb-12">
+        <p>新しいメールアドレス宛に、<br>本人確認用のメールをお送りしました。</p>
+        <p class="mt-4 text-[11px] text-gray-400">メール内の「メールアドレスを確定」ボタンを<br>クリックして手続きを完了してください。</p>
+      </div>
+
+      <%# ボタン %>
+      <div class="flex justify-center w-full">
+        <%= link_to "閉じる", mypage_path, 
+            class: "inline-block py-3 text-white font-bold text-lg rounded-full transition-all hover:opacity-90 shadow-md active:scale-95 text-center",
+            style: "background-color: #65C7A4; width: 160px; min-width: 160px; text-decoration: none;",
+            data: { turbo_frame: "_top" } %>
+      </div>
+      
+      <%# 注意書き %>
+      <p class="mt-8 text-[10px] text-gray-400 text-center">※届かない場合は迷惑メールフォルダをご確認ください</p>
+    </div>
+  </div>
+<% end %>

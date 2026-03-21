@@ -1,0 +1,47 @@
+<%= turbo_frame_tag "user_profile" do %>
+  <div class="w-full backdrop-blur-sm rounded-3xl p-8 flex flex-col border border-none shadow-lg animate-in fade-in zoom-in duration-500"
+       style="background-color: rgba(255, 255, 255, 0.7);">
+    
+    <%# 💡 タイトルをログイン画面の見出しに合わせて、少しシンプルで力強く変更 %>
+    <h1 class="text-3xl font-black text-gray-800 mb-8 text-center tracking-tighter drop-shadow-[0_1px_1px_rgba(255,255,255,1)]">
+      マイページ
+    </h1>
+
+    <div class="space-y-6">
+      <%# --- 名前セクション --- %>
+      <div class="flex items-center justify-between">
+        <div class="flex flex-col text-left">
+          <span class="text-xs font-bold text-gray-500 uppercase">NAME</span>
+          <span class="text-lg font-black text-gray-700"><%= user.name %></span>
+        </div>
+        <%= link_to '変更', edit_mypage_name_path, data: { turbo_frame: "modal" }, 
+            class: "bg-white border-2 border-[#65C7A4] text-[#65C7A4] text-xs font-black px-4 py-1 rounded-lg shadow-sm active:scale-95 transition-all" %>
+      </div>
+
+      <%# --- IDセクション --- %>
+      <div class="flex flex-col text-left">
+        <span class="text-xs font-bold text-gray-500 uppercase">USER ID</span>
+        <span class="text-lg font-black text-gray-700">888888</span>
+      </div>
+
+      <%# --- メールセクション --- %>
+      <div class="flex items-center justify-between">
+        <div class="flex flex-col text-left overflow-hidden">
+          <span class="text-xs font-bold text-gray-500 uppercase">EMAIL</span>
+          <span class="text-lg font-black text-gray-700 truncate"><%= user.email %></span>
+        </div>
+        <%= link_to '変更', edit_mypage_email_path, data: { turbo_frame: "modal" }, 
+            class: "bg-white border-2 border-[#65C7A4] text-[#65C7A4] text-xs font-black px-4 py-1 rounded-lg shadow-sm active:scale-95 transition-all" %>
+      </div>
+    </div>
+
+    <%# --- 下部セクション --- %>
+    <div class="mt-12 flex flex-col items-center gap-3">
+      <%= link_to "ログアウト", destroy_user_session_path, 
+          data: { turbo_method: :delete, turbo: "false" }, 
+          class: "bg-white border-2 border-[#EE8095] text-[#EE8095] text-sm font-black px-8 py-2 rounded-full shadow-sm active:translate-y-0.5 border-b-4 transition-all" %>
+      
+      <p class="text-[10px] text-gray-400 font-normal italic opacity-60">Everyday is an Adventure</p>
+    </div>
+  </div>
+<% end %>

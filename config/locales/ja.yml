@@ -1,15 +1,27 @@
 ja:
+  # 💡 1. 汎用的なエラーメッセージ（ここが足りなかった！）
   errors:
     messages:
-      not_saved:
-        one: "1つのエラーにより、%{resource} が保存されませんでした。"
-        other: "%{count} つのエラーにより、%{resource} が保存されませんでした。"
+      taken: "は既に存在します"
+      invalid: "は不正な値です"
+      blank: "を入力してください"
+      too_short: "は%{count}文字以上で入力してください"
+
+  # 💡 2. モデルや項目の名前
   activerecord:
     models:
       user: "ユーザー"
     attributes:
       user:
+        name: "名前"
         email: "メールアドレス"
         password: "パスワード"
         password_confirmation: "パスワード（確認用）"
         current_password: "現在のパスワード"
+    # 💡 3. モデル固有のメッセージが必要ならここ（オプション）
+    errors:
+      models:
+        user:
+          attributes:
+            email:
+              taken: "は既に登録されています"

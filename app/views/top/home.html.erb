@@ -1,0 +1,32 @@
+<%# ホーム画面 %>
+<%# 💡 修正： items-center を残し、中身の並びを制御します %>
+<div class="min-h-screen w-full flex flex-col items-center p-6 pb-24 relative overflow-hidden">
+  
+  <%# --- 1. 左上のステータスエリア --- %>
+  <%# 💡 修正： absolute で浮かせることで、お散歩モードと全く同じ左上端に固定します %>
+  <div class="absolute top-0 left-0 z-30 pointer-events-none p-0"> <%# p-0で余白をなくす %>
+    <div class="pointer-events-auto">
+      <%= render 'layouts/header' %>
+    </div>
+  </div>
+
+  <%# --- 2. メインキャラ（背面・巨大） --- %>
+  <%# 💡 今回の修正： max-w-[500px] を追加。PC画面でも狐が巨大化せず、全身がちょうどよく収まります %>
+  <div class="absolute top-[20%] left-1/2 -translate-x-1/2 w-[130vw] max-w-[500px] h-auto z-0 pointer-events-none flex justify-center">
+    <div class="relative w-full h-full animate-float">
+      <%= image_tag "いらすとや狐.png", class: "w-full h-auto object-contain filter drop-shadow-xl" %>
+    </div>
+  </div>
+
+  <%# --- 3. お散歩ボタン（前面・位置固定） --- %>
+  <%# 💡 修正： mt-auto と mb-30 で、ヘッダーの位置に関係なくボタンを下に固定します %>
+  <div class="mt-auto w-full max-w-[240px] mb-30 z-20 pointer-events-auto">
+    <%= link_to new_walking_path, class: "group relative flex items-center justify-center w-full" do %>
+      <div class="absolute inset-0 bg-[#EE8095] rounded-full blur-lg opacity-40 group-active:blur-md transition-all"></div>
+      <div class="relative w-full bg-[#EE8095] text-white text-2xl font-black py-6 rounded-full shadow-lg border-b-8 border-[#D81B60] flex items-center justify-center gap-2 transition-transform active:translate-y-1 active:border-b-0">
+        <span>お散歩する</span>
+      </div>
+    <% end %>
+  </div>
+
+</div>
