@@ -1,0 +1,156 @@
+<script>
+  // 1. カメラ起動
+  function openCamera() {
+    const input = document.getElementById('camera-input');
+    if (input) input.click();
+  }
+
+  // 2. 写真プレビュー
+  function previewImage(input) {
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const previewImg = document.getElementById('photo-preview');
+        const container = document.getElementById('photo-preview-container');
+        if (previewImg) previewImg.src = e.target.result;
+        if (container) container.style.display = 'block';
+        showFoxTalk("いい写真だね！");
+      }
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+
+  // 狐の吹き出し制御（共通）
+  function showFoxTalk(text) {
+    const bubble = document.getElementById('fox-bubble');
+    if (!bubble) return;
+    bubble.innerText = text;
+    bubble.style.display = "block";
+    setTimeout(() => { bubble.style.opacity = "1"; }, 10);
+    
+    if (window.foxTimer) clearTimeout(window.foxTimer);
+    window.foxTimer = setTimeout(() => {
+      bubble.style.opacity = "0";
+      setTimeout(() => { bubble.style.display = "none"; }, 500);
+    }, 10000);
+  }
+
+  // 3. ミッションクリア処理
+  async function completeMission(event) {
+    const btn = event.currentTarget;
+    const fox = document.getElementById('fox-container');
+    const missionTarget = document.getElementById('mission-text');
+    const previewContainer = document.getElementById('photo-preview-container');
+
+    // --- 演出：ボタンとキラキラ ---
+    btn.classList.add('btn-push');
+    createParticles(btn);
+    
+    hideFoxBubble();
+
+    // --- ロジック：お題をサーバーから取得 ---
+    const nextTitle = await fetchNextMission();
+
+    // --- 演出：ボタンを戻して狐が喜ぶ ---
+    setTimeout(() => {
+      btn.classList.remove('btn-push'); 
+
+      setTimeout(() => {
+        if (fox) fox.style.transform = "translateX(-50%) translateY(-10px)"; 
+        
+        if (nextTitle && missionTarget) {
+          missionTarget.innerText = nextTitle;
+        }
+
+        showFoxTalk("おめでとう！クリアだね！");
+
+        finalizeAction(fox, previewContainer);
+      }, 400); 
+    }, 100);
+  }
+
+  // 4. SKIPボタン処理（新機能）
+  async function skipMission(event) {
+    const btn = event.currentTarget;
+    const fox = document.getElementById('fox-container');
+    const missionTarget = document.getElementById('mission-text');
+    const previewContainer = document.getElementById('photo-preview-container');
+
+    // SKIPはキラキラさせず、少し凹むだけの軽い演出
+    btn.style.transform = "scale(0.95)";
+    setTimeout(() => { btn.style.transform = "scale(1)"; }, 100);
+    
+    hideFoxBubble();
+
+    const nextTitle = await fetchNextMission();
+
+    setTimeout(() => {
+      // 狐の反応
+      if (fox) fox.style.transform = "translateX(-50%) translateY(-10px)"; 
+      
+      if (nextTitle && missionTarget) {
+        missionTarget.innerText = nextTitle;
+      }
+
+      showFoxTalk("了解！次のお題にするね！");
+
+      finalizeAction(fox, previewContainer);
+    }, 300);
+  }
+
+  // --- 共通補助関数 ---
+
+  // お題取得ロジックの共通化
+  async function fetchNextMission() {
+    try {
+      const response = await fetch('/walkings/random_mission', {
+        headers: { 'Accept': 'application/json' },
+        cache: 'no-store'
+      });
+      const data = await response.json();
+      console.log("新しく届いたお題:", data.title);
+      return data.title;
+    } catch (e) {
+      console.error("通信エラー:", e);
+      return null;
+    }
+  }
+
+  // 吹き出しを一旦消す
+  function hideFoxBubble() {
+    const bubble = document.getElementById('fox-bubble');
+    if (bubble) {
+      bubble.style.opacity = "0";
+      setTimeout(() => { bubble.style.display = "none"; }, 300);
+    }
+  }
+
+  // アクションの締め（着地とプレビュー消去）
+  function finalizeAction(fox, previewContainer) {
+    setTimeout(() => {
+      if (fox) fox.style.transform = "translateX(-50%) translateY(0)";
+    }, 300); 
+
+    if (previewContainer) previewContainer.style.display = 'none';
+    const pImg = document.getElementById('photo-preview');
+    if (pImg) pImg.src = "";
+  }
+
+  // キラキラ演出
+  function createParticles(el) {
+    const rect = el.getBoundingClientRect();
+    for (let i = 0; i < 12; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      const size = Math.random() * 8 + 4;
+      p.style.width = p.style.height = `${size}px`;
+      p.style.background = ['#FFD700', '#65C7A4', '#EE8095'][Math.floor(Math.random() * 3)];
+      p.style.left = `${rect.left + rect.width / 2}px`;
+      p.style.top = `${rect.top + rect.height / 2}px`;
+      p.style.setProperty('--dx', `${(Math.random() - 0.5) * 200}px`);
+      p.style.setProperty('--dy', `${(Math.random() - 0.5) * 200}px`);
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 600);
+    }
+  }
+</script>

@@ -1,7 +1,36 @@
-# This file should contain all the record creation needed to seed the database with its default values.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
-#
-# Examples:
-#
-#   movies = Movie.create([{ name: "Star Wars" }, { name: "Lord of the Rings" }])
-#   Character.create(name: "Luke", movie: movies.first)
+Mission.destroy_all
+
+# 写真が必要なミッション (requires_photo: true)
+photo_missions = [
+  "赤いポストを撮ろう",
+  "自動販売機のボタンを撮ろう",
+  "カーブミラーの中の自分を撮ろう",
+  "マンホールの蓋を撮ろう",
+  "黄色い看板を撮ろう",
+  "「止まれ」の標識を撮ろう",
+  "季節の花を撮ろう",
+  "公園のベンチを撮ろう",
+  "面白い形の雲を撮ろう",
+  "自転車の車輪を撮ろう"
+].map { |t| { title: t, requires_photo: true } }
+
+# 写真不要 行動・発見ミッション (requires_photo: false)
+action_missions = [
+  "一番近くの「橋」を渡り切ろう", 
+  "大きな通りに出るまで、\nひたすら真っ直ぐ歩こう", 
+  "公園にたどり着くまで歩こう",
+  "今から5分間、\n一度も曲がらずに歩き続けてみよう",
+  "「郵便局」か「コンビニ」を\n見つけるまで歩いてみよう",
+  "一番近い「信号機」がある\n交差点まで行ってみよう",
+  "どこかの「ベンチ」を見つけて、\n3分間座って休憩しよう",
+  "川や線路沿いなど、\n見晴らしの良い場所まで歩こう",
+  "今まで通ったことのない\n「細い道」を選んで進んでみよう",
+  "10分間、風を感じながら歩こう\n（タイマー開始！）"
+].map { |t| { title: t, requires_photo: false } }
+
+# データベースに登録
+(photo_missions + action_missions).each do |m|
+  Mission.create!(m)
+end
+
+puts "✅ 合計 #{Mission.count} 個のミッションを登録しました！"

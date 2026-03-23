@@ -68,7 +68,7 @@
   <%# --- 4. 狐 --- %>
   <div id="fox-container" style="position: absolute; bottom: -50px; left: 50%; transform: translateX(-50%); width: 440px; pointer-events: none; z-index: 20; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
     <%= image_tag "いらすとや狐.png", style: "width: 100%; height: auto; filter: drop-shadow(0 15px 30px rgba(0,0,0,0.1));" %>
-    <div id="fox-bubble" style="position: absolute; top: 180px; left: -100px; background: white; padding: 12px 24px; border-radius: 2rem; border: 2.5px solid #333; font-weight: 900; font-size: 15px; white-space: nowrap; box-shadow: 5px 5px 0px #333; opacity: 1; display: block;">
+    <div id="fox-bubble" style="position: absolute; top: 200px; left: 30px; background: white; padding: 12px 24px; border-radius: 2rem; border: 2.5px solid #333; font-weight: 900; font-size: 15px; white-space: nowrap; box-shadow: 5px 5px 0px #333; opacity: 1; display: block;">
       いい調子だね！
     </div>
   </div>
@@ -96,110 +96,4 @@
 <%# 💡 カメラ入力を隠し要素として定義 %>
 <input type="file" id="camera-input" accept="image/*" capture="environment" style="display: none;" onchange="previewImage(this)">
 
-<script>
-  // 1. カメラアプリを起動する
-  function openCamera() {
-    document.getElementById('camera-input').click();
-  }
-
-  // 2. 撮影した写真をプレビュー表示
-  function previewImage(input) {
-    if (input.files && input.files[0]) {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const bubble = document.getElementById('fox-bubble');
-        document.getElementById('photo-preview').src = e.target.result;
-        document.getElementById('photo-preview-container').style.display = 'block';
-        
-        // 写真プレビュー時のセリフ
-        bubble.innerText = "いい写真だね！";
-        bubble.style.opacity = "1";
-        bubble.style.display = "block";
-      }
-      reader.readAsDataURL(input.files[0]);
-    }
-  }
-
-  // 3. クリアボタンを押した時の処理（お題更新 + 演出）
-  async function completeMission(event) {
-    const btn = event.currentTarget;
-    const fox = document.getElementById('fox-container');
-    const bubble = document.getElementById('fox-bubble');
-    const missionText = document.getElementById('mission-text');
-    const previewContainer = document.getElementById('photo-preview-container');
-
-    // --- 演出パート①：ボタンアクション ---
-    btn.classList.add('btn-push');
-    createParticles(btn);
-    
-    // 古いセリフを消す
-    bubble.style.opacity = "0";
-    setTimeout(() => { bubble.style.display = "none"; }, 300);
-
-    // --- 演出パート②：ボタンを戻してから「タメ」を経て反応 ---
-    setTimeout(() => {
-      btn.classList.remove('btn-push'); 
-
-      // ボタンが戻ってから 400ms 待つ
-      setTimeout(() => {
-        // --- ジャンプと同時にセリフを出す！ ---
-        fox.style.transform = "translateX(-50%) translateY(-10px)"; 
-        
-        bubble.innerText = "おめでとう！クリアだね！";
-        bubble.style.display = "block";
-        setTimeout(() => { bubble.style.opacity = "1"; }, 10);
-
-        // 着地
-        setTimeout(() => {
-          fox.style.transform = "translateX(-50%) translateY(0)";
-
-          // 10秒経ったら消える
-          setTimeout(() => {
-            bubble.style.opacity = "0";
-            setTimeout(() => { bubble.style.display = "none"; }, 500);
-          }, 10000);
-
-        }, 300); // 空中にいる時間
-
-      }, 400); 
-
-    }, 100); 
-
-    // --- ロジックパート（お題取得） ---
-    try {
-      const response = await fetch('/walkings/random_mission');
-      const data = await response.json();
-
-      setTimeout(() => {
-        if(missionText) missionText.innerText = data.title;
-        previewContainer.style.display = 'none';
-        document.getElementById('photo-preview').src = "";
-      }, 1500);
-
-    } catch (error) {
-      console.error("お題の取得に失敗しました:", error);
-    }
-  }
-
-  // 💡 キラキラパーティクル生成関数
-  function createParticles(el) {
-    const rect = el.getBoundingClientRect();
-    for (let i = 0; i < 12; i++) {
-      const p = document.createElement('div');
-      p.className = 'particle';
-      const size = Math.random() * 8 + 4;
-      p.style.width = `${size}px`;
-      p.style.height = `${size}px`;
-      p.style.background = ['#FFD700', '#65C7A4', '#EE8095'][Math.floor(Math.random() * 3)];
-      
-      p.style.left = `${rect.left + rect.width / 2}px`;
-      p.style.top = `${rect.top + rect.height / 2}px`;
-      
-      p.style.setProperty('--dx', `${(Math.random() - 0.5) * 200}px`);
-      p.style.setProperty('--dy', `${(Math.random() - 0.5) * 200}px`);
-      
-      document.body.appendChild(p);
-      setTimeout(() => p.remove(), 600);
-    }
-  }
-</script>
+<%= render 'walking_scripts' %>
