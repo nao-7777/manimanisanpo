@@ -1,16 +1,17 @@
+<%# app/views/walkings/new.html.erb %>
 <%# ナビ非表示・お散歩モードフラグ %>
 <% content_for :no_nav, true %>
 <% content_for :is_walking_mode, true %>
 
 <style>
-  /* 💡 追加：ボタンが押された時の「凹み」演出 */
+  /* ボタンが押された時の「凹み」演出 */
   .btn-push {
     transform: scale(0.92) translateY(2px) !important;
     filter: brightness(0.9);
     transition: transform 0.1s;
   }
 
-  /* 💡 追加：キラキラ・パーティクルのためのスタイル */
+  /* キラキラ・パーティクルのためのスタイル */
   .particle {
     position: fixed;
     pointer-events: none;
@@ -24,7 +25,7 @@
     100% { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; }
   }
 
-  /* 💡 追加：吹き出しの表示・非表示アニメーション用 */
+  /* 吹き出しの表示・非表示アニメーション用 */
   #fox-bubble {
     transition: opacity 0.5s ease;
   }
@@ -76,7 +77,11 @@
   <%# --- 5. ボトムナビ --- %>
   <div style="position: absolute; bottom: 35px; left: 50%; width: 92%; max-width: 420px; height: 95px; transform: translateX(-50%); pointer-events: auto; z-index: 60;">
     <div style="width: 100%; height: 100%; background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(20px); border-radius: 4rem; border: 2px solid white; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
-      <div style="width: 65px; height: 65px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="bi bi-image" style="font-size: 28px; color: #65C7A4;"></i></div>
+      
+      <%# ✅ 修正：link_to を削除し、onclick="toggleAlbum()" を追加 %>
+      <div onclick="toggleAlbum()" style="width: 65px; height: 65px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer;">
+        <i class="bi bi-image" style="font-size: 28px; color: #65C7A4;"></i>
+      </div>
       
       <%# マップ起動ボタン %>
       <div onclick="toggleMap()" style="width: 65px; height: 65px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer;">
@@ -87,7 +92,9 @@
     <%# カメラボタン %>
     <div style="position: absolute; top: -45px; left: 50%; width: 120px; height: 120px; transform: translateX(-50%); z-index: 70;">
       <div onclick="openCamera()" style="width: 100%; height: 100%; background: white; border-radius: 50%; padding: 10px; box-shadow: 0 12px 25px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center; cursor: pointer;">
-        <div style="width: 100%; height: 100%; background: #65C7A4; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="bi bi-camera-fill" style="font-size: 48px; color: white; line-height: 1;"></i></div>
+        <div style="width: 100%; height: 100%; background: #65C7A4; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+          <i class="bi bi-camera-fill" style="font-size: 48px; color: white; line-height: 1;"></i>
+        </div>
       </div>
     </div>
   </div>
@@ -95,5 +102,24 @@
 
 <%# 💡 カメラ入力を隠し要素として定義 %>
 <input type="file" id="camera-input" accept="image/*" capture="environment" style="display: none;" onchange="previewImage(this)">
+
+<%# 💡 下からせり上がるアルバム画面（初期状態は隠れている） %>
+<div id="album-overlay" style="
+  position: fixed; top: 100%; left: 0; width: 100%; height: 100%; 
+  background: #fffafc; z-index: 2000; transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  overflow-y: auto; pointer-events: auto; border-radius: 2rem 2rem 0 0;
+">
+  <%# 閉じるボタン（バツ） %>
+  <div onclick="toggleAlbum()" style="position: sticky; top: 20px; right: 20px; text-align: right; padding-right: 20px; cursor: pointer; z-index: 2100;">
+    <i class="bi bi-x-circle-fill" style="font-size: 32px; color: #EE8095;"></i>
+  </div>
+
+  <div id="album-content" style="padding: 0 20px 100px 20px;">
+    <h2 style="text-align: center; color: #EE8095; font-weight: 900; margin-bottom: 30px;">おさんぽアルバム</h2>
+    <div id="album-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+      <%# ここにJavaScriptで写真が流し込まれます %>
+    </div>
+  </div>
+</div>
 
 <%= render 'walking_scripts' %>

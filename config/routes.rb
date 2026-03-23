@@ -31,10 +31,14 @@ Rails.application.routes.draw do
     mount LetterOpenerWeb::Engine, at: "/letter_opener"
   end
 
-  # 5. お散歩関連（ランダムお題取得用のルートも追加）
-  resources :walkings do
+  # 5. お散歩・アルバム関連
+  resources :walkings, only: [:index, :new, :create] do
     collection do
       get :random_mission
+      post :upload_image
     end
   end
+
+  # アルバムへのショートカット用（お好みで）
+  get 'album', to: 'walkings#index', as: 'album'
 end
