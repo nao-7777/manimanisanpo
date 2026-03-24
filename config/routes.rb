@@ -32,7 +32,7 @@ Rails.application.routes.draw do
   end
 
   # 5. お散歩・アルバム関連
-  resources :walkings, only: [:index, :new, :create] do
+  resources :walkings, only: [:index, :new, :create, :show, :update] do
     collection do
       get :random_mission
       post :upload_image

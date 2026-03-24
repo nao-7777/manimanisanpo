@@ -1,9 +1,7 @@
-<%# 
-  ================================================================
-  MISSION CARD: [お題表示 & クリア処理]
-  ================================================================
-%>
 <style>
+  .btn-mission-clear { transition: transform 0.1s; user-select: none; }
+  .btn-mission-clear:active { transform: scale(0.9); }
+
   #walking-mission-card {
     position: absolute; top: 180px; left: 50%; width: 88%; max-width: 380px; 
     transform: translateX(-50%); background: rgba(255, 250, 252, 0.95); 
@@ -16,6 +14,14 @@
     width: 90px; height: 90px; background: white; padding: 6px; 
     border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.15); 
     transform: rotate(-10deg); z-index: 110;
+  }
+  .particle {
+    position: fixed; width: 10px; height: 10px; border-radius: 50%; 
+    pointer-events: none; z-index: 9999; animation: particle-burst 0.6s ease-out forwards;
+  }
+  @keyframes particle-burst {
+    0% { transform: translate(0, 0) scale(1); opacity: 1; }
+    100% { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; }
   }
 </style>
 
@@ -40,91 +46,118 @@
 <input type="file" id="camera-input" accept="image/*" capture="environment" style="display: none;" onchange="previewImage(this)">
 
 <script>
-  // 写真プレビュー
+  async function fetchNewMission() {
+    try {
+      const res = await fetch('/walkings/random_mission', { headers: { 'Accept': 'application/json' } });
+      return await res.json();
+    } catch (e) { return null; }
+  }
+
+  window.createParticles = function(el) {
+    const rect = el.getBoundingClientRect();
+    for (let i = 0; i < 15; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.style.background = ['#FFD700', '#65C7A4', '#EE8095'][Math.floor(Math.random() * 3)];
+      p.style.left = (rect.left + rect.width / 2) + 'px';
+      p.style.top = (rect.top + rect.height / 2) + 'px';
+      p.style.setProperty('--dx', (Math.random() - 0.5) * 200 + 'px');
+      p.style.setProperty('--dy', (Math.random() - 0.5) * 200 + 'px');
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 600);
+    }
+  };
+
+  window.jumpFox = function() {
+    const img = document.getElementById('fox-image');
+    if (img) {
+      img.style.transform = "translateY(-30px)";
+      setTimeout(() => { img.style.transform = "translateY(0)"; }, 200);
+    }
+  };
+
   window.previewImage = function(input) {
     if (input.files && input.files[0]) {
       const reader = new FileReader();
-      reader.onload = function(e) {
+      reader.onload = (e) => {
         document.getElementById('photo-preview').src = e.target.result;
         document.getElementById('photo-preview-container').style.display = 'block';
-        if (window.showFoxTalk) showFoxTalk("いい写真だね！");
       }
       reader.readAsDataURL(input.files[0]);
     }
   };
 
-  // ミッション完了処理
+  // 💡 アルバムに即時追加する関数
+  window.addPhotoToAlbum = function(url, title) {
+    const container = document.getElementById('photo-album-content');
+    if (!container) return;
+    const noMsg = document.getElementById('no-photo-msg');
+    if (noMsg) noMsg.remove();
+
+    const html = `
+      <div style="width: 100px; height: 100px; position: relative; margin-bottom: 10px;">
+        <img src="${url}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+        <div style="font-size: 10px; color: white; position: absolute; bottom: 5px; left: 5px; text-shadow: 1px 1px 2px black; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; width: 90%;">
+          ${title}
+        </div>
+      </div>
+    `;
+    container.insertAdjacentHTML('afterbegin', html);
+  };
+
   window.completeMission = async function(event) {
     const btn = event.currentTarget;
-    if (btn.disabled) return;
-    btn.disabled = true;
+    if (btn.dataset.loading === "true") return;
+    btn.dataset.loading = "true";
+
+    window.createParticles(btn);
+    window.jumpFox();
 
     const missionTarget = document.getElementById('mission-text');
     const fileInput = document.getElementById('camera-input');
     
-    // 💡 1. 画像アップロードを先に完了させる
     if (fileInput.files && fileInput.files[0] && missionTarget.dataset.missionId) {
+      const currentTitle = missionTarget.innerText;
       const formData = new FormData();
       formData.append('image', fileInput.files[0]);
       formData.append('mission_id', missionTarget.dataset.missionId);
-      const token = document.querySelector('meta[name="csrf-token"]').content;
-      
+      formData.append('walk_id', "<%= @walk.id %>"); 
+
       try {
+        const token = document.querySelector('meta[name="csrf-token"]').content;
         const res = await fetch('/walkings/upload_image', {
           method: 'POST',
           headers: { 'Accept': 'application/json', 'X-CSRF-Token': token },
           body: formData
         });
-        
         const data = await res.json();
-        
-        // 💡 2. サーバーから返ってきたURLを即座にアルバムに反映
-        if (data.image_url && window.addPhotoToAlbum) {
-          window.addPhotoToAlbum(data.image_url);
+        if (data.status === 'success' && data.image_url) {
+          window.addPhotoToAlbum(data.image_url, currentTitle);
         }
-      } catch (e) {
-        console.error("Upload failed:", e);
-      }
+      } catch (e) { console.error(e); }
     }
 
-    // 💡 3. エフェクトと次のお題取得
-    if (window.createParticles) window.createParticles(btn);
-    if (window.jumpFox) window.jumpFox();
-    
-    const nextData = await fetchNextMission();
+    const nextData = await fetchNewMission();
     
     setTimeout(() => {
-      btn.disabled = false;
-      if (nextData && missionTarget) {
+      if (nextData) {
         missionTarget.innerHTML = nextData.title;
         missionTarget.dataset.missionId = nextData.id;
       }
-      if (window.showFoxTalk) showFoxTalk("おめでとう！クリアだね！");
-      
-      // プレビュー消去
+      btn.dataset.loading = "false";
       document.getElementById('photo-preview-container').style.display = 'none';
       fileInput.value = "";
+      if (window.showFoxTalk) showFoxTalk("おめでとう！クリアだね！");
     }, 400);
   };
 
-  async function fetchNextMission() {
-    try {
-      const response = await fetch('/walkings/random_mission', { 
-        headers: { 'Accept': 'application/json' }, 
-        cache: 'no-store' 
-      });
-      return await response.json();
-    } catch (e) { return null; }
-  }
-
   window.skipMission = async function(event) {
-    const nextData = await fetchNextMission();
+    const nextData = await fetchNewMission();
     const missionTarget = document.getElementById('mission-text');
     if (nextData && missionTarget) {
       missionTarget.innerHTML = nextData.title;
       missionTarget.dataset.missionId = nextData.id;
     }
-    if (window.showFoxTalk) showFoxTalk("了解！次にするね！");
     document.getElementById('photo-preview-container').style.display = 'none';
   };
 </script>

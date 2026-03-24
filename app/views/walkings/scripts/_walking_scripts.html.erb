@@ -1,73 +1,101 @@
 <script>
+  // 💡 安全に値を取得するための関数
+  const getWalkId = () => document.body.dataset.walkId;
+
   window.steps = 0;
   let isSensorInitialized = false;
 
-  // 💡 狐のジャンプ：画像(fox-image)だけを上下させる
+  // 1. 狐のジャンプ
   window.jumpFox = function() {
     const img = document.getElementById('fox-image');
     if (img) {
       img.style.transform = "translateY(-30px)";
-      setTimeout(() => { 
-        img.style.transform = "translateY(0)"; 
-      }, 200);
+      setTimeout(() => { img.style.transform = "translateY(0)"; }, 200);
     }
   };
 
-  // 💡 セリフ表示：タイマーを完全にリセットして上書きを保証
+  // 2. 💡 画像アップロード (エラー耐性を強化)
+  window.uploadImage = function(blob) {
+    const walkId = getWalkId();
+    const missionId = window.currentMissionId;
+    if (!walkId || !missionId) return console.error("Missing IDs");
+
+    const formData = new FormData();
+    formData.append('image', blob);
+    formData.append('mission_id', missionId);
+    formData.append('walk_id', walkId); 
+
+    const token = document.querySelector('meta[name="csrf-token"]')?.content;
+
+    fetch('/walkings/upload_image', {
+      method: 'POST',
+      headers: { 'X-CSRF-Token': token },
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'success') {
+        if (window.addPhotoToAlbum) {
+          const title = document.getElementById('mission-text')?.innerText || "";
+          window.addPhotoToAlbum(data.image_url, title);
+        }
+        window.showFoxTalk("思い出を保存したよ！");
+      }
+    })
+    .catch(err => console.error('Upload Error:', err));
+  };
+
+  // 3. 💡 キラキラ演出 (絶対に出るように修正)
+  window.createParticles = function(el) {
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    for (let i = 0; i < 20; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      // 色をミントリーフ系に
+      p.style.background = ['#FFD700', '#49B394', '#65C7A4', '#FFFFFF'][Math.floor(Math.random() * 4)];
+      p.style.left = (rect.left + rect.width / 2) + 'px';
+      p.style.top = (rect.top + rect.height / 2) + 'px';
+      p.style.setProperty('--dx', (Math.random() - 0.5) * 300 + 'px');
+      p.style.setProperty('--dy', (Math.random() - 0.5) * 300 + 'px');
+      p.style.position = 'fixed';
+      p.style.zIndex = '10000'; // 最前面
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 800);
+    }
+  };
+
+  // 4. セリフ表示
   window.showFoxTalk = function(text) {
     const bubble = document.getElementById('fox-bubble');
     if (!bubble) return;
-
     if (window.foxTimer) clearTimeout(window.foxTimer);
-    if (window.foxHideTimer) clearTimeout(window.foxHideTimer);
-
     bubble.innerText = text;
     bubble.style.display = "block";
-    
-    // アニメーションを一旦切って即座に表示
-    bubble.style.transition = "none";
     bubble.style.opacity = "1";
-    
-    // 次のフレームでアニメーションを戻す
-    setTimeout(() => {
-      bubble.style.transition = "opacity 0.3s ease";
-    }, 50);
-
-    window.foxTimer = setTimeout(() => {
-      window.hideFoxBubble();
-    }, 8000);
+    window.foxTimer = setTimeout(() => { bubble.style.opacity = "0"; }, 5000);
   };
 
-  window.hideFoxBubble = function() {
-    const bubble = document.getElementById('fox-bubble');
-    if (bubble) { 
-      bubble.style.opacity = "0"; 
-      window.foxHideTimer = setTimeout(() => { 
-        bubble.style.display = "none"; 
-      }, 500); 
+  // 5. 💡 画面初期化 (ページロード時に強制リセット)
+  document.addEventListener('DOMContentLoaded', () => {
+    // プレビューを消す
+    const preview = document.getElementById('photo-preview-container');
+    if (preview) preview.style.display = 'none';
+
+    // 💡 サーバーから「写真0枚」と判定されている場合、中身を空にする
+    const album = document.getElementById('photo-album-content');
+    if (album && document.body.dataset.photoCount === "0") {
+      album.innerHTML = '<p id="no-photo-msg" class="text-center text-gray-400 py-10">まだ写真がありません</p>';
     }
-  };
+  });
 
-  window.createParticles = function(el) {
-    const rect = el.getBoundingClientRect();
-    for (let i = 0; i < 12; i++) {
-      const p = document.createElement('div');
-      p.className = 'particle';
-      p.style.background = ['#FFD700', '#65C7A4', '#EE8095'][Math.floor(Math.random() * 3)];
-      p.style.left = `${rect.left + rect.width / 2}px`;
-      p.style.top = `${rect.top + rect.height / 2}px`;
-      p.style.setProperty('--dx', `${(Math.random() - 0.5) * 200}px`);
-      p.style.setProperty('--dy', `${(Math.random() - 0.5) * 200}px`);
-      document.body.appendChild(p);
-      setTimeout(() => p.remove(), 600);
-    }
-  };
-
+  // 6. クリック歩数カウント
   window.addEventListener('click', (e) => {
-    if (e.target.closest('#btn-camera-container,#walking-mission-card,#walking-header-container,#btn-album,#btn-map,button,a,.status-badge')) return;
+    if (e.target.closest('#btn-camera-container,#walking-mission-card,#walking-header-container,#btn-album,#btn-map,button,a')) return;
     if (!isSensorInitialized) { isSensorInitialized = true; return; }
     window.steps++;
     if (window.updateStepDisplay) window.updateStepDisplay(window.steps);
   });
 </script>
+
 <%= render 'walkings/scripts/tracker' %>

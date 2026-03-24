@@ -8,14 +8,15 @@
   <%= render 'walking_header' %>
   <%= render 'walking_mission' %>
 
-  <%# 💡 狐のベース地点（ここ自体は動かさない） %>
+  <%# 💡 狐のベース地点 %>
   <div style="position: absolute; bottom: -50px; left: 50%; width: 440px; transform: translateX(-50%); pointer-events: none; z-index: 20;">
     
-    <%# 💡 吹き出し（親要素の直下にあるので、下の画像が動いても影響を受けない） %>
+    <%# 💡 吹き出し %>
     <div id="fox-bubble" style="position: absolute; top: 200px; left: 30px; background: white; padding: 12px 24px; border-radius: 2rem; border: 2.5px solid #333; font-weight: 900; font-size: 15px; box-shadow: 5px 5px 0px #333; display: none; z-index: 30; opacity: 1;"></div>
 
-    <%# 💡 狐本体（この ID "fox-image" を JS で動かします） %>
-    <%= image_tag "いらすとや狐.png", id: "fox-image", style: "width: 100%; height: auto; display: block; transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);" %>
+    <%# 💡 狐本体 %>
+    <%# 💡 修正：ここもレベルに応じた画像に切り替え %>
+    <%= image_tag current_user.fox_image_name, id: "fox-image", style: "width: 100%; height: auto; display: block; transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);" %>
   </div>
 </div>
 
