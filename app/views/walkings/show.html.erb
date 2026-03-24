@@ -1,0 +1,88 @@
+<%# 💡 ボトムナビを非表示にする %>
+<% content_for :no_nav, true %>
+
+<div class="min-h-screen bg-[#F0F9F6] flex flex-col items-center p-6 pb-20 relative">
+  
+  <%# --- 1. 右上のバツボタン --- %>
+  <%= link_to root_path, class: "absolute top-6 right-6 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center text-gray-400 hover:text-gray-600 transition-all active:scale-90 z-50 border border-gray-100" do %>
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" />
+    </svg>
+  <% end %>
+
+  <h1 class="text-3xl font-black text-[#49B394] my-8 animate-bounce">お疲れ様でした！</h1>
+
+  <%# --- 2. メインスコアカード --- %>
+  <div class="w-full max-w-md bg-white rounded-[3rem] p-8 shadow-xl shadow-green-100 flex flex-col items-center gap-6 border-4 border-white">
+    
+    <div class="text-center">
+      <p class="text-gray-400 font-bold mb-1">今回の歩数</p>
+      <div class="flex items-baseline justify-center gap-2">
+        <span class="text-6xl font-black text-[#49B394]"><%= @walk.steps %></span>
+        <span class="text-xl font-bold text-[#49B394]">歩</span>
+      </div>
+    </div>
+
+    <div class="text-center">
+      <p class="text-gray-400 font-bold mb-1">お散歩時間</p>
+      <p class="text-4xl font-black text-gray-600">
+        <%= format("%02d分%02d秒", @walk.duration / 60, @walk.duration % 60) %>
+      </p>
+    </div>
+
+    <%# --- 獲得経験値の内訳 (緑バージョン) --- %>
+    <div class="w-full bg-[#F0F9F6] rounded-2xl p-5 mt-2 border border-[#D1EBE3]">
+      <h3 class="text-[#49B394] font-black text-center mb-3">獲得した経験値</h3>
+      <div class="space-y-2 text-sm font-bold text-gray-600">
+        <div class="flex justify-between">
+          <span>お題クリア (<%= @mission_count %>個)</span>
+          <span>+<%= @mission_exp %> EXP</span>
+        </div>
+        <div class="flex justify-between">
+          <span>歩数ボーナス</span>
+          <span>+<%= @steps_exp %> EXP</span>
+        </div>
+        <div class="flex justify-between">
+          <span>時間ボーナス</span>
+          <span>+<%= @time_exp %> EXP</span>
+        </div>
+        <div class="flex justify-between border-t border-[#D1EBE3] pt-2 text-base text-[#49B394]">
+          <span>合計獲得</span>
+          <span>+<%= @total_exp %> EXP</span>
+        </div>
+      </div>
+    </div>
+
+    <%# --- 現在のレベルとゲージ --- %>
+    <div class="w-full text-center mt-2">
+      <div class="flex justify-between items-end px-1">
+        <p class="font-black text-gray-700">Lv. <span class="text-3xl text-[#49B394]"><%= current_user.level %></span></p>
+        <p class="text-xs text-gray-400 font-bold mb-1">Next: <%= current_user.required_exp_for_next_level - current_user.exp %> EXP</p>
+      </div>
+      
+      <div class="w-full bg-gray-100 h-5 rounded-full mt-1 overflow-hidden border-2 border-white shadow-inner relative">
+        <% progress = (current_user.exp.to_f / current_user.required_exp_for_next_level * 100).clamp(0, 100) %>
+        <div class="bg-gradient-to-r from-[#AEE6D7] to-[#49B394] h-full transition-all duration-1000 shadow-[0_0_10px_rgba(73,179,148,0.3)]" 
+             style="width: <%= progress %>%">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%# --- 3. 思い出のサムネイル --- %>
+  <% if @captured_missions.any? %>
+    <h2 class="text-[#49B394] text-xl font-black mt-10 mb-4 text-center">見つけた思い出</h2>
+    <div class="grid grid-cols-2 gap-4 w-full max-w-md px-2">
+      <% @captured_missions.each_with_index do |mission, i| %>
+        <% if mission.image.attached? %>
+          <% rotation = [1, -1, 2, -2][i % 4] %>
+          <div class="bg-white p-2 pb-6 rounded-sm shadow-lg transform rotate-<%= rotation %> border border-gray-100">
+            <%= image_tag mission.image, class: "w-full h-32 object-cover" %>
+            <p class="text-[10px] font-bold text-gray-400 mt-2 text-center font-mono"><%= mission.updated_at.strftime("%Y.%m.%d") %></p>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+
+</div>

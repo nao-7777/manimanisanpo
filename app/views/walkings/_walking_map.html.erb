@@ -1,0 +1,49 @@
+<%# ライブラリの読み込み %>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<style>
+  #walking-map-container {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: white; z-index: 2000; transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: auto;
+  }
+  #walking-map-container.is-open { transform: translateY(0%); }
+  .current-location-dot {
+    background-color: #007AFF; border: 3px solid white; border-radius: 50%;
+    box-shadow: 0 0 10px rgba(0,122,255,0.4);
+  }
+</style>
+
+<div id="walking-map-container">
+  <button onclick="toggleMap()" style="position: absolute; top: 30px; right: 20px; z-index: 2010; background: white; border: none; border-radius: 50%; width: 45px; height: 45px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; cursor: pointer;">
+    <i class="bi bi-x-lg" style="font-size: 20px; color: #555;"></i>
+  </button>
+  <div id="map" style="width: 100%; height: 100%;"></div>
+</div>
+
+<script>
+  let map, userMarker;
+  function initMap() {
+    map = L.map('map', { zoomControl: false }).setView([35.681236, 139.767125], 16);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(map);
+    if (navigator.geolocation) {
+      navigator.geolocation.watchPosition((position) => {
+        const latlng = [position.coords.latitude, position.coords.longitude];
+        if (!userMarker) {
+          userMarker = L.marker(latlng, { icon: L.divIcon({ className: 'current-location-dot', iconSize: [18, 18] }) }).addTo(map);
+          map.setView(latlng);
+        } else { userMarker.setLatLng(latlng); }
+      }, (err) => console.warn(err), { enableHighAccuracy: true });
+    }
+  }
+  document.addEventListener('DOMContentLoaded', initMap);
+  function toggleMap() {
+    const container = document.getElementById('walking-map-container');
+    container.classList.toggle('is-open');
+    if (container.classList.contains('is-open')) {
+      setTimeout(() => { map.invalidateSize(); }, 400);
+    }
+  }
+</script>

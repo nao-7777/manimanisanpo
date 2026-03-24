@@ -30,4 +30,18 @@ Rails.application.routes.draw do
   if Rails.env.development?
     mount LetterOpenerWeb::Engine, at: "/letter_opener"
   end
+
+  # 5. お散歩・アルバム関連
+  resources :walkings, only: [:index, :new, :create, :show, :update] do
+    collection do
+      get :random_mission
+      post :upload_image
+    end
+  end
+
+  # アルバムへのショートカット用（お好みで）
+  get 'album', to: 'walkings#index', as: 'album'
+
+  # お散歩の保存・詳細用 ---
+  resources :walks, only: [:update]
 end

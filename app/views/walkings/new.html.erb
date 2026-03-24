@@ -1,121 +1,28 @@
-<%# ナビ非表示・お散歩モードフラグ %>
 <% content_for :no_nav, true %>
 <% content_for :is_walking_mode, true %>
 
-<div style="
-  position: fixed; 
-  top: 0; 
-  left: 0; 
-  width: 100vw; 
-  height: 100vh; 
-  z-index: 10;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  pointer-events: none;
-  font-family: 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
-">
-  
-  <%# --- 1. ヘッダーエリア --- %>
-  <div style="position: absolute; top: 0; left: 0; width: 100%; pointer-events: auto; z-index: 100;">
-    <%= render partial: 'layouts/header', locals: { is_status_mode: true } %>
+<%= render 'walking_map' %>
+
+<%# 中間レイヤー %>
+<div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 100; overflow: hidden; pointer-events: none;">
+  <%= render 'walking_header' %>
+  <%= render 'walking_mission' %>
+
+  <%# 💡 狐のベース地点 %>
+  <div style="position: absolute; bottom: -50px; left: 50%; width: 440px; transform: translateX(-50%); pointer-events: none; z-index: 20;">
     
-    <%# --- 2. 右上のコントロールエリア --- %>
-    <div style="position: absolute; top: 32px; right: 24px; text-align: right; display: flex; flex-direction: column; gap: 10px; align-items: flex-end;">
-      
-      <%# お散歩をやめるボタン %>
-      <%= link_to root_path, style: "display: inline-block; background: white; padding: 8px 18px; border-radius: 99px; box-shadow: 0 4px 15px rgba(238, 128, 149, 0.2); text-decoration: none; border: 2px solid #EE8095; transition: all 0.3s;" do %>
-        <span style="color: #EE8095; font-weight: 800; font-size: 12px; letter-spacing: 0.05em;">お散歩をやめる</span>
-      <% end %>
+    <%# 💡 吹き出し %>
+    <div id="fox-bubble" style="position: absolute; top: 200px; left: 30px; background: white; padding: 12px 24px; border-radius: 2rem; border: 2.5px solid #333; font-weight: 900; font-size: 15px; box-shadow: 5px 5px 0px #333; display: none; z-index: 30; opacity: 1;"></div>
 
-      <%# 歩数と時間のバッジ（幅110pxで統一） %>
-      <div style="display: flex; flex-direction: column; gap: 6px; align-items: flex-end;">
-        <% badge_style = "background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px); padding: 6px 0; border-radius: 99px; border: 1.5px solid rgba(238, 128, 149, 0.3); display: flex; align-items: center; justify-content: center; gap: 6px; width: 110px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);" %>
-        
-        <div style="<%= badge_style %>">
-          <i class="bi bi-person-walking" style="color: #EE8095; font-size: 14px;"></i>
-          <span style="font-weight: 900; color: #555; font-size: 13px; font-variant-numeric: tabular-nums;">2,431<small style="font-size: 9px; margin-left: 1px;">歩</small></span>
-        </div>
-
-        <div style="<%= badge_style %>">
-          <i class="bi bi-clock-fill" style="color: #EE8095; font-size: 12px;"></i>
-          <span style="font-weight: 900; color: #555; font-size: 13px; font-variant-numeric: tabular-nums;">00:45</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <%# --- 3. お題カード --- %>
-  <div style="
-    position: absolute; 
-    top: 180px; 
-    left: 50%; 
-    width: 88%; 
-    max-width: 380px; 
-    transform: translateX(-50%); 
-    background: rgba(255, 250, 252, 0.95); 
-    backdrop-filter: blur(15px);
-    padding: 35px 25px 20px 25px; 
-    border-radius: 2.5rem; 
-    border: none; 
-    box-shadow: 0 10px 40px rgba(101, 199, 164, 0.15);
-    pointer-events: auto;
-    z-index: 50;
-  ">
-
-  <%# 吹き出しのしっぽ %>
-    <div style="
-      position: absolute;
-      bottom: -18px; <%# カードの下に配置 %>
-      left: 50%; <%# 中央から %>
-      transform: translateX(-50%);
-      width: 0;
-      height: 0;
-      border-left: 20px solid transparent;
-      border-right: 20px solid transparent;
-      backdrop-filter: blur(15px);
-      border-top: 20px solid rgba(255, 250, 252, 0.95);
-      filter: drop-shadow(0 10px 10px rgba(101, 199, 164, 0.1));
-    "></div>
-
-    <div style="text-align: center;">
-      <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 15px;">
-        <span style="height: 2px; width: 20px; background: #EE8095; opacity: 0.5;"></span>
-        <div style="font-size: 1.4rem; font-weight: 900; color: #EE8095; letter-spacing: 0.1em;">お題</div>
-        <span style="height: 2px; width: 20px; background: #EE8095; opacity: 0.5;"></span>
-      </div>
-
-      <div style="font-weight: 800; color: #555; font-size: 1.2rem; margin-bottom: 25px; line-height: 1.5;">
-        赤いポストを<br>見つけて写真を撮ろう！
-      </div>
-      
-      <%# スキップとクリアのボタン %>
-      <div style="display: flex; width: 100%; align-items: center; justify-content: space-between; padding: 0 5px; margin-top: 20px;">
-        <button style="flex: 0 0 80px; height: 35px; background: white; color: #EE8095; border: 3px solid #EE8095; border-radius: 99px; font-weight: 800; font-size: 12px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.1em; box-shadow: 0 4px 10px rgba(238, 128, 149, 0.1); display: flex; align-items: center; justify-content: center; padding: 0;">SKIP</button>
-        <button style="flex: 0 0 120px; height: 45px; background: #65C7A4; color: white; border: 3px solid white; border-radius: 99px; font-weight: 900; font-size: 16px; cursor: pointer; letter-spacing: 0.05em; box-shadow: 0 6px 15px rgba(101, 199, 164, 0.3); display: flex; align-items: center; justify-content: center; padding: 0;">クリア！</button>
-      </div>
-    </div>
-  </div>
-
-  <%# --- 4. 狐 ＆ 吹き出し --- %>
-  <div style="position: absolute; bottom: -50px; left: 50%; transform: translateX(-50%); width: 440px; pointer-events: none; z-index: 20;">
-    <%= image_tag "いらすとや狐.png", style: "width: 100%; height: auto; filter: drop-shadow(0 15px 30px rgba(0,0,0,0.1));" %>
-    <div style="position: absolute; top: 60px; right: 35px; background: white; padding: 12px 24px; border-radius: 2rem; border: 2.5px solid #333; font-weight: 900; font-size: 15px; white-space: nowrap; box-shadow: 5px 5px 0px #333;">
-      いい調子だね！
-    </div>
-  </div>
-
-  <%# --- 5. ボトムナビ --- %>
-  <div style="position: absolute; bottom: 35px; left: 50%; width: 92%; max-width: 420px; height: 95px; transform: translateX(-50%); pointer-events: auto; z-index: 60;">
-    <div style="width: 100%; height: 100%; background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 4rem; border: 2px solid white; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
-      <div style="width: 65px; height: 65px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05);"><i class="bi bi-image" style="font-size: 28px; color: #65C7A4;"></i></div>
-      <div style="width: 65px; height: 65px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05);"><i class="bi bi-map" style="font-size: 28px; color: #65C7A4;"></i></div>
-    </div>
-    <%# 💡 カメラボタンコンテナ：display: flex で中のアイコンを中央寄せ %>
-    <div style="position: absolute; top: -45px; left: 50%; width: 120px; height: 120px; transform: translateX(-50%);">
-      <div style="width: 100%; height: 100%; background: white; border-radius: 50%; padding: 10px; box-shadow: 0 12px 25px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center;">
-        <div style="width: 100%; height: 100%; background: #65C7A4; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="bi bi-camera-fill" style="font-size: 48px; color: white; line-height: 1;"></i></div>
-      </div>
-    </div>
+    <%# 💡 狐本体 %>
+    <%# 💡 修正：ここもレベルに応じた画像に切り替え %>
+    <%= image_tag current_user.fox_image_name, id: "fox-image", style: "width: 100%; height: auto; display: block; transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);" %>
   </div>
 </div>
+
+<%# 最前面レイヤー %>
+<div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999; pointer-events: none;">
+  <%= render 'walking_footer' %>
+</div>
+
+<%= render 'walkings/scripts/walking_scripts' %>

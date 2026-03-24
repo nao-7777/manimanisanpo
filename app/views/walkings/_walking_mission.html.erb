@@ -1,0 +1,163 @@
+<style>
+  .btn-mission-clear { transition: transform 0.1s; user-select: none; }
+  .btn-mission-clear:active { transform: scale(0.9); }
+
+  #walking-mission-card {
+    position: absolute; top: 180px; left: 50%; width: 88%; max-width: 380px; 
+    transform: translateX(-50%); background: rgba(255, 250, 252, 0.95); 
+    backdrop-filter: blur(15px); padding: 30px 25px 20px 25px; 
+    border-radius: 2.5rem; box-shadow: 0 10px 40px rgba(101, 199, 164, 0.15); 
+    pointer-events: auto; z-index: 50;
+  }
+  #photo-preview-container {
+    display: none; position: absolute; top: 215px; left: 15px; 
+    width: 90px; height: 90px; background: white; padding: 6px; 
+    border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.15); 
+    transform: rotate(-10deg); z-index: 110;
+  }
+  .particle {
+    position: fixed; width: 10px; height: 10px; border-radius: 50%; 
+    pointer-events: none; z-index: 9999; animation: particle-burst 0.6s ease-out forwards;
+  }
+  @keyframes particle-burst {
+    0% { transform: translate(0, 0) scale(1); opacity: 1; }
+    100% { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; }
+  }
+</style>
+
+<div id="walking-mission-card">
+  <div id="photo-preview-container">
+    <img id="photo-preview" src="" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+  </div>
+  
+  <div style="text-align: center;">
+    <div style="font-size: 1.4rem; font-weight: 900; color: #EE8095; margin-bottom: 15px;">お題</div>
+    <div id="mission-text" data-mission-id="<%= @current_mission&.id %>" style="font-weight: 800; color: #555; font-size: 1.2rem; margin-bottom: 20px; min-height: 3em; display: flex; align-items: center; justify-content: center; text-align: center;">
+      <%= (@current_mission&.title || "写真を撮ってクリアしよう！").html_safe %>
+    </div>
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+      <button onclick="skipMission(event)" style="flex: 0 0 80px; height: 35px; background: white; color: #EE8095; border: 3px solid #EE8095; border-radius: 99px; font-weight: 800; font-size: 12px; cursor: pointer;">SKIP</button>
+      <button id="btn-complete" class="btn-mission-clear" onclick="completeMission(event)" style="flex: 0 0 120px; height: 45px; background: #65C7A4; color: white; border: 3px solid white; border-radius: 99px; font-weight: 900; font-size: 16px; cursor: pointer;">クリア！</button>
+    </div>
+  </div>
+</div>
+
+<input type="file" id="camera-input" accept="image/*" capture="environment" style="display: none;" onchange="previewImage(this)">
+
+<script>
+  async function fetchNewMission() {
+    try {
+      const res = await fetch('/walkings/random_mission', { headers: { 'Accept': 'application/json' } });
+      return await res.json();
+    } catch (e) { return null; }
+  }
+
+  window.createParticles = function(el) {
+    const rect = el.getBoundingClientRect();
+    for (let i = 0; i < 15; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.style.background = ['#FFD700', '#65C7A4', '#EE8095'][Math.floor(Math.random() * 3)];
+      p.style.left = (rect.left + rect.width / 2) + 'px';
+      p.style.top = (rect.top + rect.height / 2) + 'px';
+      p.style.setProperty('--dx', (Math.random() - 0.5) * 200 + 'px');
+      p.style.setProperty('--dy', (Math.random() - 0.5) * 200 + 'px');
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 600);
+    }
+  };
+
+  window.jumpFox = function() {
+    const img = document.getElementById('fox-image');
+    if (img) {
+      img.style.transform = "translateY(-30px)";
+      setTimeout(() => { img.style.transform = "translateY(0)"; }, 200);
+    }
+  };
+
+  window.previewImage = function(input) {
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        document.getElementById('photo-preview').src = e.target.result;
+        document.getElementById('photo-preview-container').style.display = 'block';
+      }
+      reader.readAsDataURL(input.files[0]);
+    }
+  };
+
+  // 💡 アルバムに即時追加する関数
+  window.addPhotoToAlbum = function(url, title) {
+    const container = document.getElementById('photo-album-content');
+    if (!container) return;
+    const noMsg = document.getElementById('no-photo-msg');
+    if (noMsg) noMsg.remove();
+
+    const html = `
+      <div style="width: 100px; height: 100px; position: relative; margin-bottom: 10px;">
+        <img src="${url}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+        <div style="font-size: 10px; color: white; position: absolute; bottom: 5px; left: 5px; text-shadow: 1px 1px 2px black; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; width: 90%;">
+          ${title}
+        </div>
+      </div>
+    `;
+    container.insertAdjacentHTML('afterbegin', html);
+  };
+
+  window.completeMission = async function(event) {
+    const btn = event.currentTarget;
+    if (btn.dataset.loading === "true") return;
+    btn.dataset.loading = "true";
+
+    window.createParticles(btn);
+    window.jumpFox();
+
+    const missionTarget = document.getElementById('mission-text');
+    const fileInput = document.getElementById('camera-input');
+    
+    if (fileInput.files && fileInput.files[0] && missionTarget.dataset.missionId) {
+      const currentTitle = missionTarget.innerText;
+      const formData = new FormData();
+      formData.append('image', fileInput.files[0]);
+      formData.append('mission_id', missionTarget.dataset.missionId);
+      formData.append('walk_id', "<%= @walk.id %>"); 
+
+      try {
+        const token = document.querySelector('meta[name="csrf-token"]').content;
+        const res = await fetch('/walkings/upload_image', {
+          method: 'POST',
+          headers: { 'Accept': 'application/json', 'X-CSRF-Token': token },
+          body: formData
+        });
+        const data = await res.json();
+        if (data.status === 'success' && data.image_url) {
+          window.addPhotoToAlbum(data.image_url, currentTitle);
+        }
+      } catch (e) { console.error(e); }
+    }
+
+    const nextData = await fetchNewMission();
+    
+    setTimeout(() => {
+      if (nextData) {
+        missionTarget.innerHTML = nextData.title;
+        missionTarget.dataset.missionId = nextData.id;
+      }
+      btn.dataset.loading = "false";
+      document.getElementById('photo-preview-container').style.display = 'none';
+      fileInput.value = "";
+      if (window.showFoxTalk) showFoxTalk("おめでとう！クリアだね！");
+    }, 400);
+  };
+
+  window.skipMission = async function(event) {
+    const nextData = await fetchNewMission();
+    const missionTarget = document.getElementById('mission-text');
+    if (nextData && missionTarget) {
+      missionTarget.innerHTML = nextData.title;
+      missionTarget.dataset.missionId = nextData.id;
+    }
+    document.getElementById('photo-preview-container').style.display = 'none';
+  };
+</script>
