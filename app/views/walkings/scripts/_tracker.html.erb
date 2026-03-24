@@ -1,65 +1,33 @@
 <script>
-  let startTime = Date.now();
-  let steps = 0;
-  let timerInterval = null;
+  const ACCEL_THRESHOLD = 12; 
+  let lastAccel = 0;
+  let isWalking = false;
 
-  // 1. 計測を開始する関数
-  function startTracking() {
-    if (timerInterval) return; // すでに動いていたら何もしない
-    startTime = Date.now();
-    timerInterval = setInterval(updateStats, 1000);
-    console.log("計測を開始しました");
-  }
-
-  // 2. 1秒ごとに画面の表示を更新する関数
-  function updateStats() {
-    // 時間の計算
-    const now = Date.now();
-    const diff = Math.floor((now - startTime) / 1000);
-    const minutes = Math.floor(diff / 60).toString().padStart(2, '0');
-    const seconds = (diff % 60).toString().padStart(2, '0');
-
-    // 画面上の「00:45」などの部分を書き換える
-    const timerElement = document.getElementById('timer-display');
-    if (timerElement) timerElement.innerText = `${minutes}:${seconds}`;
-
-    // 歩数のシミュレーション (1秒に1〜2歩ランダムで増やす)
-    // 💡 後で本物のセンサー処理に書き換える場所
-    steps += Math.floor(Math.random() * 2) + 1;
-    const stepElement = document.getElementById('steps-display');
-    if (stepElement) stepElement.innerText = steps.toLocaleString();
-  }
-
-  // 3. お散歩終了時にデータをサーバーへ送る関数
-  async function finishWalking(walkId) {
-    const diff = Math.floor((Date.now() - startTime) / 1000);
-    const token = document.querySelector('meta[name="csrf-token"]').content;
-
-    try {
-      const response = await fetch(`/walks/${walkId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'X-CSRF-Token': token
-        },
-        body: JSON.stringify({
-          walk: {
-            end_at: new Date().toISOString(),
-            steps: steps,
-            duration: diff
-          }
-        })
-      });
-
-      if (response.ok) {
-        window.location.href = '/'; // 成功したらホームへ戻る
+  async function requestSensorPermission() {
+    if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+      const response = await DeviceMotionEvent.requestPermission();
+      if (response === 'granted') {
+        window.addEventListener('devicemotion', handleMotion);
       }
-    } catch (e) {
-      console.error("保存エラー:", e);
+    } else {
+      window.addEventListener('devicemotion', handleMotion);
     }
   }
 
-  // ページ読み込み時に自動でタイマー開始
-  window.addEventListener('DOMContentLoaded', startTracking);
+  function handleMotion(event) {
+    const accel = event.accelerationIncludingGravity;
+    if (!accel) return;
+    const totalAccel = Math.sqrt(accel.x**2 + accel.y**2 + accel.z**2);
+    const delta = Math.abs(totalAccel - lastAccel);
+
+    if (delta > ACCEL_THRESHOLD && !isWalking) {
+      isWalking = true;
+      window.steps++; // 💡 window側を更新
+      const stepElement = document.getElementById('steps-display');
+      if (stepElement) stepElement.innerText = window.steps.toLocaleString();
+      if (typeof window.jumpFox === "function") window.jumpFox();
+      setTimeout(() => { isWalking = false; }, 300);
+    }
+    lastAccel = totalAccel;
+  }
 </script>

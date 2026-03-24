@@ -1,176 +1,58 @@
 <script>
-  // --- 追加：現在のお題IDを保持する変数 ---
-  let currentMissionId = null;
+  window.steps = 0;
+  let isSensorInitialized = false;
 
-  // 1. カメラ起動
-  function openCamera() {
-    const input = document.getElementById('camera-input');
-    if (input) input.click();
-  }
-
-  // 2. 写真プレビュー
-  function previewImage(input) {
-    if (input.files && input.files[0]) {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const previewImg = document.getElementById('photo-preview');
-        const container = document.getElementById('photo-preview-container');
-        if (previewImg) previewImg.src = e.target.result;
-        if (container) container.style.display = 'block';
-        showFoxTalk("いい写真だね！");
-      }
-      reader.readAsDataURL(input.files[0]);
+  // 💡 狐のジャンプ：画像(fox-image)だけを上下させる
+  window.jumpFox = function() {
+    const img = document.getElementById('fox-image');
+    if (img) {
+      img.style.transform = "translateY(-30px)";
+      setTimeout(() => { 
+        img.style.transform = "translateY(0)"; 
+      }, 200);
     }
-  }
+  };
 
-  // 狐の吹き出し制御
-  function showFoxTalk(text) {
+  // 💡 セリフ表示：タイマーを完全にリセットして上書きを保証
+  window.showFoxTalk = function(text) {
     const bubble = document.getElementById('fox-bubble');
     if (!bubble) return;
+
+    if (window.foxTimer) clearTimeout(window.foxTimer);
+    if (window.foxHideTimer) clearTimeout(window.foxHideTimer);
+
     bubble.innerText = text;
     bubble.style.display = "block";
-    setTimeout(() => { bubble.style.opacity = "1"; }, 10);
     
-    if (window.foxTimer) clearTimeout(window.foxTimer);
+    // アニメーションを一旦切って即座に表示
+    bubble.style.transition = "none";
+    bubble.style.opacity = "1";
+    
+    // 次のフレームでアニメーションを戻す
+    setTimeout(() => {
+      bubble.style.transition = "opacity 0.3s ease";
+    }, 50);
+
     window.foxTimer = setTimeout(() => {
-      bubble.style.opacity = "0";
-      setTimeout(() => { bubble.style.display = "none"; }, 500);
-    }, 10000);
-  }
+      window.hideFoxBubble();
+    }, 8000);
+  };
 
-  // 3. ミッションクリア処理（画像送信を追加）
-  async function completeMission(event) {
-    const btn = event.currentTarget;
-    const fox = document.getElementById('fox-container');
-    const missionTarget = document.getElementById('mission-text');
-    const previewContainer = document.getElementById('photo-preview-container');
-    const fileInput = document.getElementById('camera-input');
-
-    // --- ロジック：画像があればサーバーへ送信 ---
-    if (fileInput.files && fileInput.files[0] && currentMissionId) {
-      await uploadPhoto(fileInput.files[0], currentMissionId);
-    }
-
-    // --- 演出：ボタンとキラキラ ---
-    btn.classList.add('btn-push');
-    createParticles(btn);
-    hideFoxBubble();
-
-    // --- ロジック：次のお題を取得 ---
-    const nextData = await fetchNextMission();
-
-    // --- 演出：ボタンを戻して狐が喜ぶ ---
-    setTimeout(() => {
-      btn.classList.remove('btn-push'); 
-
-      setTimeout(() => {
-        if (fox) fox.style.transform = "translateX(-50%) translateY(-10px)"; 
-        
-        if (nextData && missionTarget) {
-          missionTarget.innerHTML = nextData.title; // 改行対応
-          currentMissionId = nextData.id; // IDを更新
-        }
-
-        showFoxTalk("おめでとう！クリアだね！");
-        finalizeAction(fox, previewContainer);
-        fileInput.value = ""; // 入力をリセット
-      }, 400); 
-    }, 100);
-  }
-
-  // 4. SKIPボタン処理
-  async function skipMission(event) {
-    const btn = event.currentTarget;
-    const fox = document.getElementById('fox-container');
-    const missionTarget = document.getElementById('mission-text');
-    const previewContainer = document.getElementById('photo-preview-container');
-
-    btn.style.transform = "scale(0.95)";
-    setTimeout(() => { btn.style.transform = "scale(1)"; }, 100);
-    
-    hideFoxBubble();
-
-    const nextData = await fetchNextMission();
-
-    setTimeout(() => {
-      if (fox) fox.style.transform = "translateX(-50%) translateY(-10px)"; 
-      
-      if (nextData && missionTarget) {
-        missionTarget.innerHTML = nextData.title;
-        currentMissionId = nextData.id;
-      }
-
-      showFoxTalk("了解！次のお題にするね！");
-      finalizeAction(fox, previewContainer);
-      document.getElementById('camera-input').value = "";
-    }, 300);
-  }
-
-  // --- 共通補助関数 ---
-
-  // 💡 追加：画像をサーバーへアップロードする関数
-  async function uploadPhoto(file, missionId) {
-    const formData = new FormData();
-    formData.append('image', file);
-    formData.append('mission_id', missionId);
-
-    const token = document.querySelector('meta[name="csrf-token"]').content;
-
-    try {
-      await fetch('/walkings/upload_image', {
-        method: 'POST',
-        headers: { 'X-CSRF-Token': token },
-        body: formData
-      });
-      console.log("画像を保存しました");
-    } catch (e) {
-      console.error("画像アップロードエラー:", e);
-    }
-  }
-
-  // お題取得ロジック（IDも受け取るように修正）
-  async function fetchNextMission() {
-    try {
-      const response = await fetch('/walkings/random_mission', {
-        headers: { 'Accept': 'application/json' },
-        cache: 'no-store'
-      });
-      const data = await response.json();
-      return data; // titleだけでなくオブジェクトごと返す
-    } catch (e) {
-      console.error("通信エラー:", e);
-      return null;
-    }
-  }
-
-  // 吹き出しを消す
-  function hideFoxBubble() {
+  window.hideFoxBubble = function() {
     const bubble = document.getElementById('fox-bubble');
-    if (bubble) {
-      bubble.style.opacity = "0";
-      setTimeout(() => { bubble.style.display = "none"; }, 300);
+    if (bubble) { 
+      bubble.style.opacity = "0"; 
+      window.foxHideTimer = setTimeout(() => { 
+        bubble.style.display = "none"; 
+      }, 500); 
     }
-  }
+  };
 
-  // アクションの締め
-  function finalizeAction(fox, previewContainer) {
-    setTimeout(() => {
-      if (fox) fox.style.transform = "translateX(-50%) translateY(0)";
-    }, 300); 
-
-    if (previewContainer) previewContainer.style.display = 'none';
-    const pImg = document.getElementById('photo-preview');
-    if (pImg) pImg.src = "";
-  }
-
-  // キラキラ演出
-  function createParticles(el) {
+  window.createParticles = function(el) {
     const rect = el.getBoundingClientRect();
     for (let i = 0; i < 12; i++) {
       const p = document.createElement('div');
       p.className = 'particle';
-      const size = Math.random() * 8 + 4;
-      p.style.width = p.style.height = `${size}px`;
       p.style.background = ['#FFD700', '#65C7A4', '#EE8095'][Math.floor(Math.random() * 3)];
       p.style.left = `${rect.left + rect.width / 2}px`;
       p.style.top = `${rect.top + rect.height / 2}px`;
@@ -179,68 +61,13 @@
       document.body.appendChild(p);
       setTimeout(() => p.remove(), 600);
     }
-  }
+  };
 
-  // 💡 追加：ページ読み込み時に最初のお題のIDをセットする
-  window.addEventListener('DOMContentLoaded', () => {
-    // view側で設定したお題IDをJS側に渡す仕組み（詳細は後述）
-    const initialId = document.getElementById('mission-text').dataset.missionId;
-    if (initialId) currentMissionId = initialId;
+  window.addEventListener('click', (e) => {
+    if (e.target.closest('#btn-camera-container,#walking-mission-card,#walking-header-container,#btn-album,#btn-map,button,a,.status-badge')) return;
+    if (!isSensorInitialized) { isSensorInitialized = true; return; }
+    window.steps++;
+    if (window.updateStepDisplay) window.updateStepDisplay(window.steps);
   });
-
-  // --- 💡 追加：アルバムの表示・非表示を切り替える ---
-  function toggleAlbum() {
-    const album = document.getElementById('album-overlay');
-    if (!album) return;
-
-    if (album.style.top === '0px') {
-      // 閉じる
-      album.style.top = '100%';
-      // 狐の吹き出しを元に戻す演出を入れてもOK
-    } else {
-      // 開く前に最新の写真を読み込む
-      refreshAlbum();
-      album.style.top = '0px';
-    }
-  }
-
-  // --- 💡 追加：サーバーからアルバムデータを取得して表示を更新する ---
-  async function refreshAlbum() {
-    const grid = document.getElementById('album-grid');
-    if (!grid) return;
-
-    try {
-      // JSON形式でお題一覧（画像付き）を取得
-      const response = await fetch('/walkings', { 
-        headers: { 'Accept': 'application/json' } 
-      });
-      const missions = await response.json();
-
-      if (missions.length === 0) {
-        grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #aaa; margin-top: 40px;">まだ写真がありません</p>';
-        return;
-      }
-
-      // 取得したデータをポラロイド風のHTMLに変換して流し込む
-      grid.innerHTML = missions.map((m, index) => {
-        const rotation = index % 2 === 0 ? -3 : 3; // 左右に少し傾ける
-        return `
-          <div style="background: white; padding: 10px 10px 25px 10px; border-radius: 2px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transform: rotate(${rotation}deg);">
-            <div style="width: 100%; aspect-ratio: 1/1; overflow: hidden; background: #f0f0f0; margin-bottom: 8px;">
-              <img src="${m.image_url}" style="width: 100%; height: 100%; object-fit: cover;">
-            </div>
-            <p style="font-size: 10px; font-weight: 800; color: #666; text-align: center; margin: 0; line-height: 1.2;">
-              ${m.title}
-            </p>
-          </div>
-        `;
-      }).join('');
-
-    } catch (e) {
-      console.error("アルバムの読み込みに失敗しました:", e);
-      grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #ff8080;">読み込みエラーが発生しました</p>';
-    }
-  }
 </script>
-
 <%= render 'walkings/scripts/tracker' %>

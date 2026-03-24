@@ -1,18 +1,12 @@
 class WalksController < ApplicationController
-  # お散歩開始（レコード作成）
-  def create
-    @walk = Walk.create(start_at: Time.current, steps: 0)
-    # 作成したWalkのIDをお散歩画面に渡す
-    redirect_to new_walking_path(walk_id: @walk.id)
-  end
-
-  # お散歩終了（データ更新）
+  # JSからのPATCHリクエストを受け取って保存
   def update
     @walk = Walk.find(params[:id])
     if @walk.update(walk_params)
-      render json: { status: 'success' }
+      # 💡 IDを返さず、単に成功ステータスだけ返す
+      render json: { status: 'success' }, status: :ok
     else
-      render json: { status: 'error' }, status: :unprocessable_entity
+      render json: { status: 'error', errors: @walk.errors.full_messages }, status: :unprocessable_entity
     end
   end
 

@@ -41,4 +41,7 @@ Rails.application.routes.draw do
 
   # アルバムへのショートカット用（お好みで）
   get 'album', to: 'walkings#index', as: 'album'
+
+  # お散歩の保存・詳細用 ---
+  resources :walks, only: [:update]
 end

@@ -1,9 +1,10 @@
 class WalkingsController < ApplicationController
+  # 💡 ヘルパーを読み込んで url_for を使えるようにする
+  include Rails.application.routes.url_helpers
+
   def index
-    # すべての「画像が添付されているミッション」を、新しい順に取得
     @missions_with_photos = Mission.with_attached_image
-                                   .joins(:image_attachment)
-                                   .order(created_at: :desc)
+                                   .order(updated_at: :desc)
 
     respond_to do |format|
       format.html { redirect_to new_walking_path }
@@ -12,8 +13,7 @@ class WalkingsController < ApplicationController
           {
             id: m.id,
             title: m.title,
-            # 💡 画像のURLを確実に生成（ActiveStorage用）
-            image_url: Rails.application.routes.url_helpers.rails_blob_path(m.image, only_path: true)
+            image_url: m.image.attached? ? url_for(m.image) : nil
           }
         }
       }
@@ -21,41 +21,42 @@ class WalkingsController < ApplicationController
   end
 
   def new
-    # 最初のお題を1つセットしておく
     @current_mission = Mission.order("RANDOM()").first
+    @walk = Walk.create(start_at: Time.current, steps: 0, duration: 0)
   end
 
-  def create
-    # お散歩終了時の保存処理をあとで書きます
-  end
-
-  # ランダムお題取得用のアクション
   def random_mission
     @mission = Mission.order("RANDOM()").first
     render json: { 
+      id: @mission.id, # 💡 IDを返さないとクリア時にどのお題か判別できないので追加
       title: @mission.title, 
       requires_photo: @mission.requires_photo 
     }
   end
 
-  # 画像アップロード用のアクション
+  # 💡 ここを修正：保存した画像のURLをJSONで返すようにしました
   def upload_image
-    # 元々のお題データを探す
     original_mission = Mission.find(params[:mission_id])
   
     if params[:image].present?
-      # 💡 重要：元のデータを更新せず、新しいMission（クリア済み用）を作成する！
-      # これにより、同じ「赤いポスト」でも回数分だけアルバムに残ります。
+      # 新しいクリア済みレコードを作成
       @cleared_data = Mission.create!(
         title: original_mission.title,
         requires_photo: true
-        # もしクリア日時なども保存したければ、ここに足せます
       )
     
-      # 新しく作ったレコードに画像を保存
+      # 画像を添付
       @cleared_data.image.attach(params[:image])
     
-      render json: { status: 'success', message: '思い出を保存しました！' }
+      # 💡 【重要】保存した画像のURLを生成してフロントに返す
+      # url_for を使うことで、ActiveStorageの有効なURLが送られます
+      image_url = url_for(@cleared_data.image)
+
+      render json: { 
+        status: 'success', 
+        message: '思い出を保存しました！',
+        image_url: image_url # 💡 これが JS の addPhotoToAlbum に渡る
+      }
     else
       render json: { status: 'error', message: '画像が見つかりません' }, status: :unprocessable_entity
     end
