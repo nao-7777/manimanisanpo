@@ -2,10 +2,19 @@
   // 💡 安全に値を取得するための関数
   const getWalkId = () => document.body.dataset.walkId;
 
-  window.steps = 0;
+  // 💡 【修正点】リロード時に0で上書きせず、保存データから数値を復帰させる
+  (function() {
+    const walkId = getWalkId();
+    const storageKey = `walk_data_${walkId}`;
+    const savedData = JSON.parse(localStorage.getItem(storageKey) || '{}');
+    
+    // LocalStorageに保存があればそれを使い、なければDB(Rails)の値をセット
+    window.steps = savedData.steps !== undefined ? savedData.steps : <%= @walk.steps || 0 %>;
+  })();
+
   let isSensorInitialized = false;
 
-  // 1. 狐のジャンプ
+  // 1. 狐のジャンプ（元の定義のまま）
   window.jumpFox = function() {
     const img = document.getElementById('fox-image');
     if (img) {
@@ -87,9 +96,12 @@
     if (album && document.body.dataset.photoCount === "0") {
       album.innerHTML = '<p id="no-photo-msg" class="text-center text-gray-400 py-10">まだ写真がありません</p>';
     }
+    
+    // 💡 リロード直後にヘッダーの数字を最新の状態に同期
+    if (window.updateStepDisplay) window.updateStepDisplay(window.steps);
   });
 
-  // 6. クリック歩数カウント
+  // 6. クリック歩数カウント（ここから jumpFox を削除し、元通りにしました）
   window.addEventListener('click', (e) => {
     if (e.target.closest('#btn-camera-container,#walking-mission-card,#walking-header-container,#btn-album,#btn-map,button,a')) return;
     if (!isSensorInitialized) { isSensorInitialized = true; return; }

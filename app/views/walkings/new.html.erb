@@ -3,24 +3,23 @@
 
 <%= render 'walking_map' %>
 
-<%# 中間レイヤー %>
-<div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 100; overflow: hidden; pointer-events: none;">
+<div 
+  data-controller="walking-mode"
+  data-walking-mode-walk-id-value="<%= @walk.id %>"
+  <%# 💡 リロード時にここが 0 にならないように DB の値をセット %>
+  data-walking-mode-initial-steps-value="<%= @walk.steps || 0 %>"
+  data-walking-mode-initial-duration-value="<%= @walk.duration || 0 %>"
+  style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 100; overflow: hidden; pointer-events: none;">
+  
   <%= render 'walking_header' %>
   <%= render 'walking_mission' %>
 
-  <%# 💡 狐のベース地点 %>
   <div style="position: absolute; bottom: -50px; left: 50%; width: 440px; transform: translateX(-50%); pointer-events: none; z-index: 20;">
-    
-    <%# 💡 吹き出し %>
     <div id="fox-bubble" style="position: absolute; top: 200px; left: 30px; background: white; padding: 12px 24px; border-radius: 2rem; border: 2.5px solid #333; font-weight: 900; font-size: 15px; box-shadow: 5px 5px 0px #333; display: none; z-index: 30; opacity: 1;"></div>
-
-    <%# 💡 狐本体 %>
-    <%# 💡 修正：ここもレベルに応じた画像に切り替え %>
     <%= image_tag current_user.fox_image_name, id: "fox-image", style: "width: 100%; height: auto; display: block; transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);" %>
   </div>
 </div>
 
-<%# 最前面レイヤー %>
 <div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999; pointer-events: none;">
   <%= render 'walking_footer' %>
 </div>
