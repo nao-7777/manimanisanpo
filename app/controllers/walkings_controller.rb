@@ -14,11 +14,18 @@ class WalkingsController < ApplicationController
   end
 
   def new
+    # 💡 修正：まだ終わっていない（end_at が nil）お散歩があればそれを使い、なければ新しく作る
+    @walk = current_user.walks.where(end_at: nil).first_or_create(
+      start_at: Time.current, 
+      steps: 0, 
+      duration: 0
+    )
+
+    # 💡 お題は、このお散歩ですでにクリアしたものを避けて取得（オプション）
+    # シンプルにするなら今まで通りランダムで1つ取得
     @current_mission = Mission.where(walk_id: nil).order("RANDOM()").first
-    # 💡 ユーザーを紐付けて作成（user_idがないとエラーになる場合があるため）
-    @walk = Walk.create(user: current_user, start_at: Time.current, steps: 0, duration: 0)
     
-    # 💡 修正：今回の walk に紐づく写真だけを取得（最初は必ず0件になる）
+    # 💡 これでリロードしても、この @walk に紐づくクリア済みの写真が引き継がれる
     @captured_missions = @walk.missions.with_attached_image
   end
 
@@ -46,41 +53,72 @@ class WalkingsController < ApplicationController
 
   def show
     @walk = Walk.find(params[:id])
-    
-    # 💡 修正：ここも walk_id で絞り込む
     @mission_count = @walk.missions.count
     @mission_exp = @mission_count * 50
     @steps_exp   = (@walk.steps / 100) * 10
     @time_exp    = (@walk.duration / 60) * 5
     @total_exp   = @mission_exp + @steps_exp + @time_exp
-    
-    # 💡 修正：今回の散歩で撮った写真だけを取得
     @captured_missions = @walk.missions.with_attached_image
+
+    # 💡 修正：今回の獲得分を引いた「開始時のレベル」を逆算
+    # 100expで1レベル上がる計算（current_user.exp は累計経験値）の場合
+    previous_exp = [current_user.exp - @total_exp, 0].max
+    previous_level = (previous_exp / 100) + 1
+    
+    # 現在のレベルと比較して、上がっていれば true
+    @is_level_up = current_user.level > previous_level
   end
 
   def random_mission
-    # 💡 お題のマスターデータ（walk_idが空のもの）からランダムに選ぶ
-    @mission = Mission.where(walk_id: nil).order("RANDOM()").first
-    render json: { id: @mission.id, title: @mission.title, requires_photo: @mission.requires_photo }
+  # 💡 1. パラメータ、または実行中のお散歩を特定する
+    walk_id = params[:walk_id] || current_user.walks.where(end_at: nil).last&.id
+  
+  # 💡 2. 今のお散歩で「すでに保存（クリア）されたお題のタイトル」を取得
+  # (お題を複製して保存する仕組みのため、タイトルで比較するのが一番確実です)
+    cleared_titles = Mission.where(walk_id: walk_id).pluck(:title)
+
+  # 💡 3. クリア済みのタイトルを除外して、マスターデータから選ぶ
+    @mission = Mission.where(walk_id: nil)
+                      .where.not(title: cleared_titles) # ここが重要！
+                      .order("RANDOM()")
+                      .first
+
+  # もし万が一お題が尽きた場合の安全策
+    if @mission.nil?
+      render json: { title: "自由にお散歩を楽しもう！", id: nil, requires_photo: false }
+    else
+      render json: { id: @mission.id, title: @mission.title, requires_photo: @mission.requires_photo }
+    end
   end
 
-  def upload_image
+  def upload_image # メソッド名はJSと合わせるため一旦そのまま
     original_mission = Mission.find(params[:mission_id])
+    walk = Walk.find(params[:walk_id])
 
+    # 💡 写真があってもなくても、新しいMissionレコード（クリア実績）を作る
+    @cleared_data = Mission.new(
+      title: original_mission.title,
+      requires_photo: original_mission.requires_photo,
+      walk_id: walk.id
+    )
+
+    # 💡 写真があれば添付する
     if params[:image].present?
-      # 💡 送られてきた walk_id を使って保存
-      @cleared_data = Mission.create!(
-        title: original_mission.title,
-        requires_photo: true,
-        walk_id: params[:walk_id]
-      )
-      
       @cleared_data.image.attach(params[:image])
-      image_url = url_for(@cleared_data.image)
+    end
 
-      render json: { status: 'success', message: '思い出を保存しました！', image_url: image_url }
+    if @cleared_data.save
+      # 💡 ここでクリア実績としてカウントされるようになる
+      image_url = @cleared_data.image.attached? ? url_for(@cleared_data.image) : nil
+      
+      render json: { 
+        status: 'success', 
+        image_url: image_url,
+        current_level: current_user.level,
+        exp_percent: (current_user.exp % 100)
+      }
     else
-      render json: { status: 'error', message: '画像が見つかりません' }, status: :unprocessable_entity
+      render json: { status: 'error', message: '保存に失敗しました' }, status: :unprocessable_entity
     end
   end
 end

@@ -87,22 +87,26 @@
     }
   };
 
-  // 💡 アルバムに即時追加する関数
   window.addPhotoToAlbum = function(url, title) {
-    const container = document.getElementById('photo-album-content');
-    if (!container) return;
-    const noMsg = document.getElementById('no-photo-msg');
-    if (noMsg) noMsg.remove();
+    // 💡 既存のアルバム追加ロジック
+    if (typeof window.addPhotoToAlbumUI === 'function') {
+      window.addPhotoToAlbumUI(url, title);
+    } else {
+      const container = document.getElementById('photo-album-content');
+      if (!container) return;
+      const noMsg = document.getElementById('no-photo-msg');
+      if (noMsg) noMsg.remove();
 
-    const html = `
-      <div style="width: 100px; height: 100px; position: relative; margin-bottom: 10px;">
-        <img src="${url}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
-        <div style="font-size: 10px; color: white; position: absolute; bottom: 5px; left: 5px; text-shadow: 1px 1px 2px black; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; width: 90%;">
-          ${title}
+      const html = `
+        <div style="width: 100px; height: 100px; position: relative; margin-bottom: 10px;">
+          <img src="${url}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+          <div style="font-size: 10px; color: white; position: absolute; bottom: 5px; left: 5px; text-shadow: 1px 1px 2px black; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; width: 90%;">
+            ${title}
+          </div>
         </div>
-      </div>
-    `;
-    container.insertAdjacentHTML('afterbegin', html);
+      `;
+      container.insertAdjacentHTML('afterbegin', html);
+    }
   };
 
   window.completeMission = async function(event) {
@@ -115,13 +119,19 @@
 
     const missionTarget = document.getElementById('mission-text');
     const fileInput = document.getElementById('camera-input');
-    
-    if (fileInput.files && fileInput.files[0] && missionTarget.dataset.missionId) {
+    const missionId = missionTarget.dataset.missionId;
+
+    // 💡 修正：写真がなくてもお題IDがあればクリア処理を行う
+    if (missionId) {
       const currentTitle = missionTarget.innerText;
       const formData = new FormData();
-      formData.append('image', fileInput.files[0]);
-      formData.append('mission_id', missionTarget.dataset.missionId);
+      formData.append('mission_id', missionId);
       formData.append('walk_id', "<%= @walk.id %>"); 
+
+      // 写真が選択されていれば追加
+      if (fileInput.files && fileInput.files[0]) {
+        formData.append('image', fileInput.files[0]);
+      }
 
       try {
         const token = document.querySelector('meta[name="csrf-token"]').content;
@@ -131,10 +141,17 @@
           body: formData
         });
         const data = await res.json();
+        
+        // 写真がある場合のみアルバムに反映
         if (data.status === 'success' && data.image_url) {
           window.addPhotoToAlbum(data.image_url, currentTitle);
         }
-      } catch (e) { console.error(e); }
+        
+        // 💡 ヘッダーの経験値バーを連動（もし関数があれば）
+        if (window.updateHeaderStatus) {
+          window.updateHeaderStatus(data);
+        }
+      } catch (e) { console.error("Save Error:", e); }
     }
 
     const nextData = await fetchNewMission();
