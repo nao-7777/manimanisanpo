@@ -60,12 +60,17 @@
 <script>
   let isFetchingMission = false;
 
+  // 💡 セリフのバリエーション定義
+  const foxQuotes = {
+    clear: ["いい調子だ。新しい景色を探しにいこうか", "ふふ、やるじゃないか", "見事だ。褒めてやろう", "ふむ。お前といると退屈しないな。","良い収穫だ。次はどうする？"],
+    skip: ["別の縁を探すか。いいだろう", "ふふ、お前の気まぐれに付き合おう", "焦らなくていい。散歩は道草が肝心だ", "承知した。次はどこへ行く？"]
+  };
+  const getQuote = (type) => foxQuotes[type][Math.floor(Math.random() * foxQuotes[type].length)];
+
   document.addEventListener("DOMContentLoaded", () => {
     const mt = document.getElementById('mission-text');
     const cid = mt.dataset.missionId;
-    // 初回にIDがない場合のみ実行
     if (!cid || cid === "" || cid === "null" || cid === "undefined") {
-      console.log("Mission ID missing on load, fetching...");
       skipMission();
     }
   });
@@ -74,13 +79,11 @@
     if (isFetchingMission) return null;
     isFetchingMission = true;
     try {
-      const res = await fetch(`/walkings/random_mission.json?t=${Date.now()}`, { 
+      const res = await fetch(`/walkings/random_mission?t=${Date.now()}`, { 
         headers: { 'Accept': 'application/json' } 
       });
       if (!res.ok) throw new Error('Fetch failed');
-      const data = await res.json();
-      console.log("DEBUG: Rails returned ->", data); // これがコンソールに出るはず
-      return data;
+      return await res.json();
     } catch (e) { 
       console.error("Fetch Error:", e);
       return null; 
@@ -132,7 +135,6 @@
     const mid = mt.dataset.missionId;
 
     if (!mid || mid === "null" || mid === "" || mid === "undefined") {
-       console.log("No Mission ID found. Skipping...");
        await skipMission();
        return;
     }
@@ -147,13 +149,13 @@
     const formData = new FormData();
     formData.append('mission_id', mid);
 
-    let url = `/walkings/${walkId}/complete_mission.json`;
+    let url = `/walkings/${walkId}/complete_mission`;
     let method = 'PATCH';
 
     const fileInput = document.getElementById('camera-input');
     if (fileInput.files && fileInput.files[0]) {
       formData.append('image', fileInput.files[0]);
-      url = `/walkings/${walkId}/upload_image.json`;
+      url = `/walkings/${walkId}/upload_image`;
       method = 'POST';
     }
 
@@ -176,7 +178,8 @@
           btn.dataset.loading = "false";
           document.getElementById('photo-preview-container').style.display = 'none';
           fileInput.value = "";
-          if (window.showFoxTalk) showFoxTalk("おめでとう！クリアだね！");
+          // 💡 クリア時のランダムセリフ
+          if (window.showFoxTalk) showFoxTalk(getQuote('clear'));
         }, 400);
       }
     } catch (e) { 
@@ -190,10 +193,10 @@
     const data = await fetchNewMission();
     const mt = document.getElementById('mission-text');
     if (data && mt) {
-      // 💡 ここで確実にHTMLと属性を更新する
       mt.innerHTML = data.title || "写真を撮ってクリアしよう！";
       mt.dataset.missionId = data.id;
-      console.log("DOM Updated:", mt.innerHTML, mt.dataset.missionId);
+      // 💡 スキップ時のランダムセリフ
+      if (window.showFoxTalk) showFoxTalk(getQuote('skip'));
     }
     document.getElementById('photo-preview-container').style.display = 'none';
   };

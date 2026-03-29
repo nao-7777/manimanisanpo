@@ -25,10 +25,10 @@ class UserCharacter < ApplicationRecord
   end
 
   # 初期値を「金宵（こよい）」にする
-  DEFAULT_CHARACTER_KEY = "koyoi"
+  DEFAULT_CHARACTER_KEY = "金宵"
 
   def current_avatar_path
-    # character_key が空なら "konsho" を使う（安全策）
+    # character_key が空なら "金宵" を使う（安全策）
     key = self.character_key.presence || DEFAULT_CHARACTER_KEY
     
     # レベル10以上なら進化後

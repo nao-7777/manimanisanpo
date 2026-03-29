@@ -12,12 +12,17 @@ class WalkingsController < ApplicationController
 
   def new
     @walk = current_user.walks.where(end_at: nil).order(created_at: :desc).first_or_create(start_at: Time.current, steps: 0, duration: 0)
-    @current_mission = Mission.where(walk_id: nil).order("RANDOM()").first
+    
+    # 💡 修正：今回の散歩でまだクリアしていないIDから抽選
+    @current_mission = Mission.where.not(id: @walk.mission_ids).order("RANDOM()").first
     @captured_missions = @walk.missions.with_attached_image
   end
 
   def random_mission
-    @mission = Mission.where(walk_id: nil).order("RANDOM()").first
+    walk = current_user.walks.find_by(end_at: nil)
+    # 💡 修正：今回の散歩でまだクリアしていないIDから抽選
+    @mission = Mission.where.not(id: walk&.mission_ids || []).order("RANDOM()").first
+    
     render json: { id: @mission&.id || 0, title: @mission&.title || "全てクリア！" }
   end
 
@@ -25,16 +30,12 @@ class WalkingsController < ApplicationController
     @walk = Walk.find(params[:id])
     @user_char = current_user.user_characters.first
     
-    # 1. 今回の獲得EXPを計算
     @mission_count = @walk.missions.count
     @mission_exp = @mission_count * 50
     @steps_exp = (@walk.steps / 100) * 10
     @time_exp = (@walk.duration / 60) * 5
     @total_exp = @mission_exp + @steps_exp + @time_exp
 
-    # 2. 【重要】レベルアップ判定を確実に
-    # 今回の獲得EXPが、レベルアップに必要な残りEXPを超えていれば演出フラグを立てる
-    # (保存後のデータから逆算)
     old_exp_in_level = @user_char.exp - @total_exp
     @is_level_up = old_exp_in_level < 0 
     
@@ -47,7 +48,6 @@ class WalkingsController < ApplicationController
     steps = params[:steps].to_i
     duration_sec = params[:duration].to_i
     
-    # EXP計算
     mission_count = @walk.missions.count
     total_exp = (mission_count * 50) + ((steps / 100) * 10) + ((duration_sec / 60) * 5)
 
@@ -61,22 +61,51 @@ class WalkingsController < ApplicationController
 
   def complete_mission
     @walk = current_user.walks.find(params[:id])
-    mission = Mission.find(params[:mission_id])
-    if mission.update(walk_id: @walk.id)
-      next_mission = Mission.where(walk_id: nil).order("RANDOM()").first
-      render json: { status: 'success', next_mission: { id: next_mission&.id, title: next_mission&.title || "全てクリア！" } }
-    else
-      render json: { status: 'error' }, status: :unprocessable_entity
+  
+    if params[:mission_id].to_i > 0
+      mission = Mission.find_by(id: params[:mission_id])
+      # ここでwalk_idが更新されます
+      mission.update(walk_id: @walk.id) if mission
     end
+
+    # 💡 修正：次のお題も今回の散歩で未クリアなものから選ぶ
+    next_mission = Mission.where.not(id: @walk.mission_ids).order("RANDOM()").first
+  
+    render json: { 
+      status: 'success', 
+      next_mission: { 
+        id: next_mission&.id, 
+        title: next_mission&.title || "全てクリア！" 
+      } 
+    }
   end
 
   def upload_image
     @walk = current_user.walks.find(params[:id])
-    mission = Mission.find(params[:mission_id])
-    mission.image.attach(params[:image]) if params[:image].present?
-    if mission.update(walk_id: @walk.id)
-      next_mission = Mission.where(walk_id: nil).order("RANDOM()").first
-      render json: { status: 'success', image_url: url_for(mission.image), next_mission: { id: next_mission&.id, title: next_mission&.title || "全てクリア！" } }
+    mission = Mission.find_by(id: params[:mission_id])
+    
+    if mission
+      mission.image.attach(params[:image]) if params[:image].present?
+      mission.update(walk_id: @walk.id)
+    end
+
+    # 💡 修正：次のお題
+    next_mission = Mission.where.not(id: @walk.mission_ids).order("RANDOM()").first
+    
+    render json: { 
+      status: 'success', 
+      image_url: (mission&.image&.attached? ? url_for(mission.image) : nil), 
+      next_mission: { 
+        id: next_mission&.id, 
+        title: next_mission&.title || "全てクリア！" 
+      } 
+    }
+  end
+
+  def save_progress
+    @walk = current_user.walks.find(params[:id])
+    if @walk.update(steps: params[:steps].to_i, duration: params[:duration].to_i)
+      render json: { status: 'success' }
     else
       render json: { status: 'error' }, status: :unprocessable_entity
     end

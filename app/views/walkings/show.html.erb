@@ -15,7 +15,6 @@
   }
 </style>
 
-<%# 💡 justify-center を追加して、カードを上下中央に配置するように修正 %>
 <div class="min-h-screen bg-[#F0F9F6] flex flex-col items-center justify-center p-6 pb-20 relative">
   
   <%= link_to root_path, class: "absolute top-6 right-6 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center text-gray-400 z-50 border border-gray-100" do %>
@@ -24,7 +23,6 @@
 
   <h1 class="text-3xl font-black text-[#49B394] mb-8 animate-bounce">お疲れ様でした！</h1>
 
-  <%# --- メインスコアカード --- %>
   <div class="w-full max-w-md bg-white rounded-[3rem] p-8 shadow-xl shadow-green-100 flex flex-col items-center gap-6 border-4 border-white">
     <div class="text-center">
       <p class="text-gray-400 font-bold mb-1">今回の歩数</p>
@@ -39,9 +37,26 @@
       <p class="text-4xl font-black text-gray-600"><%= format("%02d分%02d秒", @walk.duration / 60, @walk.duration % 60) %></p>
     </div>
 
+    <%# 💡 ここを詳細な内訳が表示されるように修正しました %>
     <div class="w-full bg-[#F0F9F6] rounded-2xl p-5 border border-[#D1EBE3]">
-      <div class="space-y-2 text-sm font-bold text-gray-600 text-center">
-          <span class="text-[#49B394]">合計獲得 +<%= @total_exp %> EXP</span>
+      <div class="space-y-2 text-sm font-bold text-gray-600">
+        <div class="flex justify-between items-center">
+          <span>ミッションクリア (<%= @mission_count %>個)</span>
+          <span class="text-[#49B394]">+<%= @mission_exp %></span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span>歩数ボーナス</span>
+          <span class="text-[#49B394]">+<%= @steps_exp %></span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span>時間ボーナス</span>
+          <span class="text-[#49B394]">+<%= @time_exp %></span>
+        </div>
+        <hr class="border-[#D1EBE3] my-2">
+        <div class="flex justify-between items-center text-base font-black">
+          <span>合計獲得</span>
+          <span class="text-[#49B394]">+<%= @total_exp %> EXP</span>
+        </div>
       </div>
     </div>
 
@@ -58,7 +73,7 @@
       <div class="w-full bg-gray-100 h-5 rounded-full mt-1 overflow-hidden border-2 border-white relative">
         <% 
           req = @user_char.required_exp_for_next_level
-          prev_w = @is_level_up ? 85 : ([@user_char.exp - @total_exp, 0].max.to_f / req * 100).clamp(0, 95)
+          prev_w = @is_level_up ? 85 : ([(@user_char.exp - @total_exp).to_f / req * 100, 0].max).clamp(0, 95)
           target_w = (@user_char.exp.to_f / req * 100).clamp(0, 100)
         %>
         <div id="result-exp-bar" 
@@ -72,7 +87,6 @@
     </div>
   </div>
 
-  <%# --- 写真一覧 --- %>
   <% if @captured_missions.any? %>
     <div class="w-full max-w-md mt-10">
       <h2 class="text-[#49B394] text-xl font-black mb-4 text-center">見つけた思い出</h2>
