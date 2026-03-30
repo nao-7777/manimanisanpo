@@ -1,26 +1,103 @@
-<div class="relative min-h-screen w-full flex flex-col justify-between p-8 pt-24 overflow-hidden" 
+<div class="relative min-h-screen w-full flex flex-col justify-between p-6 pt-16 overflow-hidden" 
      style="background: linear-gradient(180deg, #ffe2ea 30%, #97DBC1 90%);">
   
   <%# 中央セクション %>
-  <div class="flex flex-col items-center gap-12 z-10">
-    <%# タイトル %>
-    <h1 class="text-4xl md:text-5xl font-black text-[#4db6ac] tracking-[0.15em] drop-shadow-[0_2px_4px_rgba(255,255,255,1)] text-center">
-      まにまに散歩
-    </h1>
+  <div class="flex flex-col items-center z-10 flex-1">
+    
+    <%# --- タイトルセクション：上部の余白を少し拡大 --- %>
+    <div class="py-16 md:py-24 flex flex-col items-center relative">
+      <%# 背後の柔らかな光 %>
+      <div class="absolute w-64 h-64 bg-white/40 rounded-full blur-3xl -z-10"></div>
+      
+      <h1 class="flex flex-col items-center select-none">
+        <%# 「まにまに」：ミントグリーンの弾ける配置 %>
+        <div class="flex gap-2 mb-1">
+          <span class="text-7xl md:text-8xl font-black text-[#76d7b5] drop-shadow-[5px_5px_0px_white] -rotate-6">ま</span>
+          <span class="text-7xl md:text-8xl font-black text-[#76d7b5] drop-shadow-[5px_5px_0px_white] rotate-3 mt-3">に</span>
+          <span class="text-7xl md:text-8xl font-black text-[#76d7b5] drop-shadow-[5px_5px_0px_white] -rotate-3">ま</span>
+          <span class="text-7xl md:text-8xl font-black text-[#76d7b5] drop-shadow-[5px_5px_0px_white] rotate-6 mt-3">に</span>
+        </div>
+        
+        <%# 「散歩」：白フチのステッカー風 %>
+        <div class="mt-2">
+          <span class="text-5xl md:text-7xl font-black text-[#5ec9a7] tracking-[0.3em] pl-[0.3em] drop-shadow-[6px_6px_0px_white]">
+            散歩
+          </span>
+        </div>
+      </h1>
+    </div>
 
-    <%# アプリ紹介カード（すりガラス風） %>
-    <div class="w-full max-w-[320px] aspect-[3/4] bg-white/30 backdrop-blur-xl rounded-[50px] flex flex-col items-center justify-center border border-white/60 shadow-2xl">
-      <p class="text-4xl font-black text-gray-600/60 tracking-tighter italic">アプリ紹介</p>
-      <div class="mt-4 w-12 h-1 bg-[#61c5a2]/30 rounded-full"></div>
+    <%# アプリ紹介カード（さらに大きく、文字も大きく） %>
+    <div class="w-full max-w-[440px] flex-1 mb-8 bg-white/50 backdrop-blur-3xl rounded-[70px] flex flex-col border border-white/80 shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden">
+      <div class="flex-1 overflow-y-auto p-12 custom-scrollbar">
+        
+        <%# メインコピー %>
+        <div class="space-y-6 mb-16">
+          <h2 class="text-4xl font-black text-[#3d8b83] leading-tight tracking-tight">
+            神様と歩く、<br>いつもの道。
+          </h2>
+          <p class="text-[18px] leading-relaxed text-gray-800 font-bold opacity-90">
+            力を失い、姿も色も忘れてしまった「小さな土地神様」。あなたの何気ない歩みが、神様の力になります。
+          </p>
+        </div>
+
+        <%# 遊び方のステップ %>
+        <div class="space-y-16">
+          <div class="flex gap-6">
+            <span class="text-[#4db6ac] font-black text-3xl mt-1 opacity-50">01</span>
+            <div>
+              <p class="text-[20px] font-black text-gray-900 mb-2">歩いて、絆を深める</p>
+              <p class="text-[15px] text-gray-700 leading-relaxed font-semibold">
+                歩数計と連動し、一緒に歩く時間が神様のエネルギーに。あなたの歩みが直接、神様の力へと変換されます。
+              </p>
+            </div>
+          </div>
+
+          <div class="flex gap-6">
+            <span class="text-[#4db6ac] font-black text-3xl mt-1 opacity-50">02</span>
+            <div>
+              <p class="text-[20px] font-black text-gray-900 mb-2">見つけて、捧げる</p>
+              <p class="text-[15px] text-gray-700 leading-relaxed font-semibold">
+                「橋を渡れ」「季節の花を探せ」——届くお題をクリアし、道端の景色を写真に撮って神様にプレゼントしましょう。
+              </p>
+            </div>
+          </div>
+
+          <div class="flex gap-6">
+            <span class="text-[#4db6ac] font-black text-3xl mt-1 opacity-50">03</span>
+            <div>
+              <p class="text-[20px] font-black text-gray-900 mb-2">共に、成長する</p>
+              <p class="text-[15px] text-gray-700 leading-relaxed font-semibold">
+                絆が深まると神様の姿が進化。白紙だった体に色が宿り、あなただけの大切な相棒へと育っていきます。
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <%# 結び %>
+        <div class="mt-20 pt-10 border-t-2 border-[#4db6ac]/10 text-center pb-10">
+          <p class="text-[18px] font-black text-[#4db6ac] italic tracking-[0.1em]">
+            目的地のない散歩は、もう終わり。
+          </p>
+          <p class="text-[14px] text-gray-600 mt-4 font-bold">
+            今日から隣には、あなたを待っている相棒がいます。
+          </p>
+        </div>
+      </div>
     </div>
   </div>
 
   <%# 下部リンク %>
-  <div class="w-full text-[12px] text-gray-500 font-bold space-y-2 z-10 pb-4">
-    <div class="flex gap-6">
-      <p class="hover:text-[#4db6ac] cursor-pointer">利用規約</p>
-      <p class="hover:text-[#4db6ac] cursor-pointer">プライバシーポリシー</p>
+  <div class="w-full text-[13px] text-gray-600 font-bold space-y-2 z-10 pb-6 bg-transparent">
+    <div class="flex gap-10 justify-center">
+      <p class="hover:text-[#4db6ac] cursor-pointer transition-colors decoration-[#4db6ac] underline-offset-4 hover:underline">利用規約</p>
+      <p class="hover:text-[#4db6ac] cursor-pointer transition-colors decoration-[#4db6ac] underline-offset-4 hover:underline">プライバシーポリシー</p>
     </div>
-    <p class="text-[10px] text-gray-400 font-normal italic">Everyday is an Adventure</p>
+    <p class="text-[11px] text-gray-400 font-medium italic text-center tracking-[0.2em]">Everyday is an Adventure</p>
   </div>
 </div>
+
+<style>
+  .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+  .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(77, 182, 172, 0.3); border-radius: 10px; }
+</style>

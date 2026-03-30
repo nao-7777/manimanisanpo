@@ -37,7 +37,9 @@
       <% unless user_signed_in? %>
         <header class="fixed top-0 left-0 w-full flex justify-between items-center p-6 z-50 bg-transparent">
           <%= link_to root_path, class: "transition-transform hover:scale-105 active:scale-95" do %> 
-            <div class="bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-sm text-gray-400 font-bold text-xs">ロゴ</div>
+            <div class="bg-white rounded-full w-12 h-12 flex items-center justify-center shadow-md overflow-hidden">
+              <%= image_tag "まにまに散歩ロゴマーク.png", class: "w-full h-full object-contain" %>
+            </div>
           <% end %>
           <%= link_to "ログイン", new_user_session_path, 
               class: "px-6 py-2.5 text-white font-bold text-lg rounded-full shadow-md inline-block text-center",
