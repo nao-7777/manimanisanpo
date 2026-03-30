@@ -1,0 +1,32 @@
+<style>
+  #walking-header-container { position: absolute; top: 0; left: 0; width: 100%; pointer-events: auto; z-index: 100; }
+  .walking-status-area { position: absolute; top: 32px; right: 24px; text-align: right; display: flex; flex-direction: column; gap: 12px; align-items: flex-end; }
+  .btn-finish-walking { display: inline-block; background: white; padding: 10px 20px; border-radius: 99px; text-decoration: none; border: 3px solid #EE8095; transition: transform 0.1s; cursor: pointer; pointer-events: auto !important; }
+  .btn-finish-walking span { color: #EE8095; font-weight: 900; font-size: 14px; }
+  .status-badge { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); padding: 6px 12px; border-radius: 99px; display: flex; align-items: center; gap: 8px; width: 125px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 1.5px solid #65C7A4; }
+  .status-icon-circle { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: #e6f7f0; }
+  .status-value { font-weight: 900; color: #444; font-size: 15px; font-family: 'Courier New', monospace; flex-grow: 1; text-align: right; }
+  .status-unit { font-size: 10px; font-weight: 800; margin-left: 2px; color: #65C7A4; }
+</style>
+
+<div id="walking-header-container">
+  <%= render partial: 'layouts/header', locals: { is_status_mode: true } %>
+  <div class="walking-status-area">
+    <div id="btn-finish-walking-trigger" class="btn-finish-walking">
+      <span>お散歩をやめる</span>
+    </div>
+    
+    <div style="flex-direction: column; display: flex; gap: 8px;">
+      <div class="status-badge">
+        <div class="status-icon-circle"><i class="bi bi-person-walking" style="color: #65C7A4; font-size: 14px;"></i></div>
+        <span id="display-steps" class="status-value"><%= @walk.steps %></span><span class="status-unit">歩</span>
+      </div>
+      <div class="status-badge">
+        <div class="status-icon-circle"><i class="bi bi-clock-fill" style="color: #65C7A4; font-size: 12px;"></i></div>
+        <span id="display-timer" class="status-value">00:00</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%= render 'walkings/shared/header/header_logic' %>

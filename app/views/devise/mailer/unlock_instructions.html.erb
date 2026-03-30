@@ -1,7 +1,15 @@
-<p>Hello <%= @resource.email %>!</p>
+<p><%= @resource.email %> 様</p>
 
-<p>Your account has been locked due to an excessive number of unsuccessful sign in attempts.</p>
+<p>いつも「まにまに散歩」をご利用いただきありがとうございます。</p>
 
-<p>Click the link below to unlock your account:</p>
+<p>お客様のアカウントにおいて、一定回数以上のログイン失敗が確認されたため、セキュリティ保護の観点からアカウントを一時的にロックいたしました。</p>
 
-<p><%= link_to 'Unlock my account', unlock_url(@resource, unlock_token: @token) %></p>
+<p>お手数ですが、以下のリンクをクリックしてアカウントのロックを解除してください。</p>
+
+<p><%= link_to 'アカウントのロックを解除する', unlock_url(@resource, unlock_token: @token) %></p>
+
+<p>※本メールに心当たりがない場合や、心当たりのないログイン試行が続く場合は、第三者による不正アクセスの可能性がございます。速やかにパスワードの変更等をご検討ください。</p>
+
+<p>--------------------------------------------------<br>
+まにまに散歩 <br>
+--------------------------------------------------</p>

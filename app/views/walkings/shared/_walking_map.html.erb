@@ -1,0 +1,76 @@
+<%# 💡 ライブラリ読み込み行は削除（application.html.erbへ移動したため） %>
+
+<style>
+  /* スタイル（デザイン）は一切変更なし */
+  #walking-map-container {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100%; background: white; 
+    z-index: 99999; transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: auto; overflow: hidden;
+  }
+  #walking-map-container.is-open { transform: translateY(0%); }
+  body:has(#walking-map-container.is-open) .bottom-nav,
+  body:has(#walking-map-container.is-open) .walking-footer,
+  body:has(#walking-map-container.is-open) footer { display: none !important; }
+  .current-location-dot { background-color: #007AFF; border: 3px solid white; border-radius: 50%; box-shadow: 0 0 10px rgba(0,122,255,0.4); }
+  #map { width: 100%; height: 100%; background: #f8f8f8; }
+</style>
+
+<div id="walking-map-container">
+  <button onclick="toggleMap()" style="position: absolute; top: 30px; right: 20px; z-index: 100000; background: white; border: none; border-radius: 50%; width: 45px; height: 45px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; cursor: pointer;">
+    <i class="bi bi-x-lg" style="font-size: 20px; color: #555;"></i>
+  </button>
+  <div id="map"></div>
+</div>
+
+<script>
+  // 地図変数の初期化
+  if (typeof map === 'undefined') { var map; }
+  let userMarker;
+
+  window.toggleMap = function() {
+    const container = document.getElementById('walking-map-container');
+    if (!container) return;
+    const isOpen = container.classList.toggle('is-open');
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+    if (isOpen && map) {
+      setTimeout(() => { map.invalidateSize(true); }, 100);
+      setTimeout(() => { map.invalidateSize(true); }, 450); 
+    }
+  };
+
+  function initMap() {
+    if (typeof L === 'undefined') {
+      console.log("Leaflet is not loaded yet. Retrying...");
+      setTimeout(initMap, 100);
+      return;
+    }
+
+    const mapElement = document.getElementById('map');
+    if (!mapElement || map) return;
+
+    map = L.map('map', { zoomControl: false, tap: false }).setView([35.681236, 139.767125], 16);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(map);
+
+    if (navigator.geolocation) {
+      navigator.geolocation.watchPosition((position) => {
+        const latlng = [position.coords.latitude, position.coords.longitude];
+        if (!userMarker) {
+          userMarker = L.marker(latlng, { icon: L.divIcon({ className: 'current-location-dot', iconSize: [18, 18] }) }).addTo(map);
+          map.setView(latlng);
+        } else { 
+          userMarker.setLatLng(latlng); 
+        }
+      }, (err) => console.warn(err), { enableHighAccuracy: true });
+    }
+  }
+
+  // Turboとブラウザ読み込みの両方で実行
+  document.addEventListener('turbo:load', initMap);
+  // 初回読み込み用
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMap);
+  } else {
+    initMap();
+  }
+</script>

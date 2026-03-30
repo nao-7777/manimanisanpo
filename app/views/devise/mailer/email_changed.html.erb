@@ -1,7 +1,15 @@
-<p>Hello <%= @email %>!</p>
+<p><%= @email %> 様</p>
+
+<p>いつも「まにまに散歩」をご利用いただきありがとうございます。</p>
 
 <% if @resource.try(:unconfirmed_email?) %>
-  <p>We're contacting you to notify you that your email is being changed to <%= @resource.unconfirmed_email %>.</p>
+  <p>お客様のアカウントにおいて、メールアドレスを <%= @resource.unconfirmed_email %> へ変更する手続きを受け付けました。</p>
 <% else %>
-  <p>We're contacting you to notify you that your email has been changed to <%= @resource.email %>.</p>
+  <p>お客様のアカウントにおいて、メールアドレスが <%= @resource.email %> へ変更されたことをお知らせいたします。</p>
 <% end %>
+
+<p>※本メールに心当たりがない場合は、第三者による不正アクセスの可能性がございます。お手数ですが、速やかに運営事務局までお問い合わせください。</p>
+
+<p>--------------------------------------------------<br>
+まにまに散歩 <br>
+--------------------------------------------------</p>

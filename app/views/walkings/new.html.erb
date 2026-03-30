@@ -1,32 +1,6 @@
 <% content_for :no_nav, true %>
 <% content_for :is_walking_mode, true %>
 
-<%# --- 1. 判定ロジック：is_v2 を定義 --- %>
-<% active_char = current_user.user_characters.first %>
-<% current_lv = active_char&.level || 1 %>
-<% is_v2 = current_lv >= 10 %>
-
-<%# --- 2. スタイル定義：進化前(v1)の数値は一切変えない --- %>
-<% 
-  if is_v2
-    # 進化後 (v2) 
-    # 本体：中央(50%)基準でドカンと大きく
-    fox_container_style = "position: absolute; top: 380px; left: 50%; width: 900px !important; max-width: none !important; transform: translateX(-50%); pointer-events: none; z-index: 20;"
-    
-    # 吹き出し：進化前と「全く同じ設定」にする
-    # 進化前が left: 30px なら、ここも 30px。transformは無し。
-    bubble_style = "position: absolute; top: 310px; left: 270px;"
-  else
-    # 進化前 (v1) ：元のデザインを完全維持
-    fox_container_style = "position: absolute; bottom: -80px; left: 50%; width: 400px; transform: translateX(-50%); pointer-events: none; z-index: 20;"
-    
-    # 元のセリフ位置
-    bubble_style = "position: absolute; top: 290px; left: 20px;"
-  end
-%>
-
-<%= render 'walking_map' %>
-
 <div 
   data-controller="walking-mode"
   data-walking-mode-walk-id-value="<%= @walk.id %>"
@@ -34,21 +8,39 @@
   data-walking-mode-initial-duration-value="<%= @walk.duration || 0 %>"
   style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 100; overflow: hidden; pointer-events: none;">
   
-  <%= render 'walking_header' %>
-  <%= render 'walking_mission' %>
+  <%# --- ヘッダー --- %>
+  <%= render 'walkings/shared/header/walking_header' %>
+  
+  <%# --- お題カード --- %>
+  <%= render 'walkings/shared/missions/walking_mission' %>
 
-  <%# --- 金宵のコンテナ --- %>
-  <div style="<%= fox_container_style %>">
-    <%# 吹き出し：中身（セリフ）は今まで通りJSで制御されるのでスタイルだけ適用 %>
-    <div id="fox-bubble" style="<%= bubble_style %> background: white; padding: 7px 18px; border-radius: 2rem; border: 2.5px solid #333; font-weight: 900; font-size: 15px; box-shadow: 5px 5px 0px #333; display: none; z-index: 30; white-space: nowrap; opacity: 1;"></div>
-    
-    <%# 画像本体 %>
-    <%= image_tag current_user.current_fox_image, id: "fox-image", style: "width: 100%; height: auto; display: block; transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);" %>
-  </div>
+  <%# --- キャラクター表示 --- %>
+  <%= render 'walkings/shared/walking_character' %>
 </div>
 
+<%# --- お散歩モードのボトムナビ --- %>
 <div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999; pointer-events: none;">
-  <%= render 'walking_footer' %>
+  <%= render 'walkings/shared/walking_footer' %>
 </div>
 
-<%= render 'walkings/scripts/walking_scripts' %>
+<script>
+  // クリックで1歩
+  (function() {
+    let isSensorInitialized = false;
+    window.addEventListener('click', (e) => {
+      // 特定のボタン以外を叩いた時
+      if (e.target.closest('#btn-camera-container,#walking-mission-card,#walking-header-container,#btn-album,#btn-map,button,a')) return;
+      
+      // 最初のクリックでセンサーなどの初期化を走らせる
+      if (!isSensorInitialized) { 
+        if (window.requestSensorPermission) window.requestSensorPermission();
+        isSensorInitialized = true; 
+        return; 
+      }
+      
+      // ヘッダーの関数を叩いて歩数を増やす
+      window.steps = (window.steps || 0) + 1;
+      if (window.updateStepDisplay) window.updateStepDisplay(window.steps);
+    });
+  })();
+</script>

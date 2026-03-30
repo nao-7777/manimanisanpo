@@ -1,0 +1,113 @@
+<script>
+  (function() {
+    // 💡 Turbo環境では DOMContentLoaded の代わりに turbo:load を使うのが鉄則です
+    const initializeWalkHeader = () => {
+      const walkId = <%= @walk.id %>;
+      const storageKey = `walk_data_${walkId}`;
+      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+      
+      const savedData = JSON.parse(localStorage.getItem(storageKey) || '{}');
+      let currentSteps = savedData.steps !== undefined ? savedData.steps : <%= @walk.steps || 0 %>;
+      let totalSeconds = savedData.duration !== undefined ? savedData.duration : <%= @walk.duration || 0 %>;
+
+      window.steps = currentSteps;
+
+      const timerEl = document.getElementById('display-timer');
+      const stepsEl = document.getElementById('display-steps');
+
+      function reflectDisplay() {
+        if (stepsEl) stepsEl.innerText = currentSteps.toLocaleString();
+        if (timerEl) {
+          const mins = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+          const secs = (totalSeconds % 60).toString().padStart(2, '0');
+          timerEl.innerText = `${mins}:${secs}`;
+        }
+      }
+
+      reflectDisplay();
+
+      window.updateStepDisplay = (count) => {
+        currentSteps = count;
+        window.steps = count;
+        reflectDisplay();
+        localStorage.setItem(storageKey, JSON.stringify({ steps: currentSteps, duration: totalSeconds }));
+      };
+
+      function tick() {
+        totalSeconds++;
+        reflectDisplay();
+        localStorage.setItem(storageKey, JSON.stringify({ steps: currentSteps, duration: totalSeconds }));
+      }
+      const timerInterval = setInterval(tick, 1000);
+
+      // --- センサー系 ---
+      const ACCEL_THRESHOLD = 12; 
+      let lastAccel = 0;
+      let isWalking = false;
+
+      window.handleMotion = function(event) {
+        const accel = event.accelerationIncludingGravity;
+        if (!accel) return;
+        const totalAccel = Math.sqrt(accel.x**2 + accel.y**2 + accel.z**2);
+        const delta = Math.abs(totalAccel - lastAccel);
+        if (delta > ACCEL_THRESHOLD && !isWalking) {
+          isWalking = true;
+          window.updateStepDisplay(currentSteps + 1);
+          if (typeof window.jumpFox === "function") window.jumpFox();
+          setTimeout(() => { isWalking = false; }, 300);
+        }
+        lastAccel = totalAccel;
+      };
+
+      window.requestSensorPermission = async function() {
+        if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+          const response = await DeviceMotionEvent.requestPermission();
+          if (response === 'granted') window.addEventListener('devicemotion', window.handleMotion);
+        } else {
+          window.addEventListener('devicemotion', window.handleMotion);
+        }
+      };
+
+      const autoSaveInterval = setInterval(async () => {
+        try {
+          await fetch(`/walkings/${walkId}/save_progress`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken, 'Accept': 'application/json' },
+            body: JSON.stringify({ walking: { steps: currentSteps, duration: totalSeconds } })
+          });
+        } catch (e) {}
+      }, 10000);
+
+      // 💡 ボタンの取得とイベント登録
+      const stopBtn = document.getElementById('btn-finish-walking-trigger');
+      if (stopBtn) {
+        // 前のイベントが残らないよう一度リセットしてから登録
+        stopBtn.onclick = async (e) => {
+          e.preventDefault();
+          if (!confirm('お散歩を終了して記録を保存しますか？')) return;
+          try {
+            const res = await fetch(`/walkings/${walkId}`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken, 'Accept': 'application/json' },
+              body: JSON.stringify({ steps: currentSteps, duration: totalSeconds })
+            });
+            if (res.ok) {
+              localStorage.removeItem(storageKey);
+              const data = await res.json();
+              window.location.href = data.redirect_url;
+            }
+          } catch (err) {}
+        };
+      }
+
+      // ページを離れるときにタイマーを掃除
+      document.addEventListener("turbo:before-visit", () => {
+        clearInterval(timerInterval);
+        clearInterval(autoSaveInterval);
+      }, { once: true });
+    };
+
+    // 初回読み込みと、Turboによる遷移の両方に対応させる
+    document.addEventListener('turbo:load', initializeWalkHeader);
+  })();
+</script>

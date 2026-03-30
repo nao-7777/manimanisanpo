@@ -1,5 +1,14 @@
-<p>Welcome <%= @email %>!</p>
+<p>まにまに散歩へようこそ、<%= @email %> 様</p>
 
-<p>You can confirm your account email through the link below:</p>
+<p>この度は「まにまに散歩」にご登録いただき、誠にありがとうございます。</p>
 
-<p><%= link_to 'Confirm my account', confirmation_url(@resource, confirmation_token: @token) %></p>
+<p>ご本人様確認のため、以下のリンクをクリックしてアカウントの有効化を完了させてください。</p>
+
+<p><%= link_to 'メールアドレスを確定する', confirmation_url(@resource, confirmation_token: @token) %></p>
+
+<p>※本メールに心当たりがない場合は、お手数ですが破棄をお願いいたします。<br>
+本登録が完了するまで、お客様の情報が有効になることはありません。</p>
+
+<p>--------------------------------------------------<br>
+まにまに散歩 <br>
+--------------------------------------------------</p>

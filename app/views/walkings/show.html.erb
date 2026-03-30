@@ -1,19 +1,8 @@
 <% content_for :no_nav, true %>
 <% @user_char = current_user.user_characters.first %>
 
-<style>
-  @keyframes level-up-bounce {
-    0% { transform: scale(1); }
-    30% { transform: scale(1.6); color: #FFD700; text-shadow: 0 0 20px rgba(255, 215, 0, 0.8); }
-    100% { transform: scale(1); color: #49B394; }
-  }
-  .display-level-base { display: inline-block; will-change: transform; }
-  .level-bounce-effect { animation: level-up-bounce 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-  @keyframes particle-burst {
-    0% { transform: translate(0, 0) scale(1); opacity: 1; }
-    100% { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; }
-  }
-</style>
+<%= render 'walkings/shared/show_styles' %>
+<%= render 'walkings/shared/show_logic' %>
 
 <div class="min-h-screen bg-[#F0F9F6] flex flex-col items-center justify-center p-6 pb-20 relative">
   
@@ -37,7 +26,6 @@
       <p class="text-4xl font-black text-gray-600"><%= format("%02d分%02d秒", @walk.duration / 60, @walk.duration % 60) %></p>
     </div>
 
-    <%# 💡 ここを詳細な内訳が表示されるように修正しました %>
     <div class="w-full bg-[#F0F9F6] rounded-2xl p-5 border border-[#D1EBE3]">
       <div class="space-y-2 text-sm font-bold text-gray-600">
         <div class="flex justify-between items-center">
@@ -102,43 +90,3 @@
     </div>
   <% end %>
 </div>
-
-<script>
-  window.createParticles = function(el) {
-    const rect = el.getBoundingClientRect();
-    for (let i = 0; i < 30; i++) {
-      const p = document.createElement('div');
-      p.style.cssText = `position:fixed;width:10px;height:10px;border-radius:50%;pointer-events:none;z-index:9999;left:${rect.left+rect.width/2}px;top:${rect.top+rect.height/2}px;background:${['#FFD700','#65C7A4','#EE8095'][Math.floor(Math.random()*3)]};--dx:${(Math.random()-0.5)*400}px;--dy:${(Math.random()-0.5)*400}px;animation:particle-burst 0.8s ease-out forwards;`;
-      document.body.appendChild(p);
-      setTimeout(() => p.remove(), 800);
-    }
-  };
-
-  document.addEventListener("DOMContentLoaded", () => {
-    const bar = document.getElementById('result-exp-bar');
-    const lv = document.getElementById('display-level');
-    if (!bar || !lv) return;
-
-    setTimeout(() => {
-      const isUp = bar.dataset.levelUp === "true";
-      const target = bar.dataset.targetPercent;
-
-      if (isUp) {
-        bar.style.width = "100%";
-        setTimeout(() => {
-          lv.innerText = bar.dataset.finalLevel;
-          lv.classList.add('level-bounce-effect');
-          window.createParticles(lv);
-          bar.style.transitionDuration = "0ms";
-          bar.style.width = "0%";
-          setTimeout(() => {
-            bar.style.transitionDuration = "1000ms";
-            bar.style.width = target + "%";
-          }, 50);
-        }, 1100);
-      } else {
-        bar.style.width = target + "%";
-      }
-    }, 500);
-  });
-</script>

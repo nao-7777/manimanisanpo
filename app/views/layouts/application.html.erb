@@ -6,6 +6,10 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
+    <%# --- Leaflet --- %>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
     <script src="https://unpkg.com/@hotwired/turbo@7.3.0/dist/turbo.es2017-umd.js"></script>
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -16,20 +20,22 @@
 
   <body style="min-height: 100%; margin: 0; padding: 0; overflow-x: hidden; position: relative;">
 
-    <%# 💡 背景レイヤー：絶対にはみ出さないように fixed ＆ inset-0 ＆ width/height 100vw/vh %>
+    <%# 背景レイヤー %>
     <div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -2; pointer-events: none;
                 background: radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.5), transparent 30%),
                            linear-gradient(to bottom, #F5F5F0 0%, #F5F5F0 35%, #A4D5BD 100%);">
     </div>
 
-    <%# 💡 麻の葉模様レイヤー：同様に固定 %>
+    <%# 麻の葉模様レイヤー %>
     <div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none;
                 background-image: url('<%= asset_path('麻の葉.png') %>');
                 background-size: 650px;
                 background-repeat: repeat;
-                background-position: center;
+                background-position: left top;
                 opacity: 0.12;
-                mix-blend-mode: multiply;">
+                mix-blend-mode: multiply;
+                image-rendering: -webkit-optimize-contrast;
+                transform: translateZ(0);">
     </div>
     
     <%# --- ヘッダー --- %>
@@ -61,7 +67,7 @@
     <%# --- SweetAlert2 略 --- %>
     <% if flash[:sent_modal] %>
       <script>
-        document.addEventListener("turbo:load", () => {
+        const showSentModal = () => {
           Swal.fire({
             title: 'メールを送信しました！',
             html: 'パスワード再設定用のメールを送信しました。',
@@ -73,8 +79,11 @@
               btn.style.cssText = "background-color:#65C7A4; color:#fff; border-radius:9999px; padding:12px 60px; font-weight:bold; border:none;";
             }
           });
-        });
+          document.removeEventListener("turbo:load", showSentModal);
+        };
+        document.addEventListener("turbo:load", showSentModal);
       </script>
+      <% flash.delete(:sent_modal) %>
     <% end %>
   </body>
 </html>

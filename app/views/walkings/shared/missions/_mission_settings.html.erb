@@ -1,0 +1,36 @@
+<script>
+  // 金宵のセリフデータ
+  const foxQuotes = {
+    clear: ["いい調子だ。新しい景色を探しにいこうか", "ふふ、やるじゃないか", "見事だ。褒めてやろう", "ふむ。お前といると退屈しないな。", "良い収穫だ。次はどうする？"],
+    skip: ["別の縁を探すか。いいだろう", "ふふ、お前の気まぐれに付き合おう", "焦らなくていい。散歩は道草が肝心だ", "承知した。次はどこへ行く？"]
+  };
+  window.getQuote = (type) => foxQuotes[type][Math.floor(Math.random() * foxQuotes[type].length)];
+
+  // 演出用の共通関数（キラキラ）
+  window.createParticles = function(el) {
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    for (let i = 0; i < 20; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.style.background = ['#FFD700', '#49B394', '#65C7A4', '#FFFFFF'][Math.floor(Math.random() * 4)];
+      p.style.left = (rect.left + rect.width / 2) + 'px';
+      p.style.top = (rect.top + rect.height / 2) + 'px';
+      p.style.setProperty('--dx', (Math.random() - 0.5) * 300 + 'px');
+      p.style.setProperty('--dy', (Math.random() - 0.5) * 300 + 'px');
+      p.style.position = 'fixed';
+      p.style.zIndex = '10000'; 
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 800);
+    }
+  };
+
+  // キャラのジャンプ
+  window.jumpFox = function() {
+    const img = document.getElementById('fox-image');
+    if (img) {
+      img.style.transform = "translateY(-30px)";
+      setTimeout(() => { img.style.transform = "translateY(0)"; }, 200);
+    }
+  };
+</script>

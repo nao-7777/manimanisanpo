@@ -5,6 +5,6 @@
     <%= render "profile_card", user: @user %>
   </div>
 
-  <%# 💡 ここが重要：常に空で待機し、ボタンが押された時だけ中身が流し込まれる %>
+  <%# 常に空で待機し、ボタンが押された時だけ中身が流し込まれる %>
   <%= turbo_frame_tag "modal", target: "_top" %>
 </div>

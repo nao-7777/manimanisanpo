@@ -1,4 +1,3 @@
-<%# 💡 ナビ非表示のフラグ %>
 <% content_for(:hide_bottom_nav, true) %>
 
 <div class="char-detail-fullpage">
@@ -26,7 +25,7 @@
         <%# 進化後 %>
         <div class="card-item">
           <div class="img-wrapper evolution-img-container">
-            <%# 💡 ユーザーの現在のレベルを取得して判定 %>
+            <%# ユーザーの現在のレベルを取得して判定 %>
             <% user_char = current_user.user_characters.find_by(character_id: @character.id) %>
             <% current_lv = user_char&.level || 1 %>
 
@@ -53,7 +52,7 @@
       </div>
     </div>
 
-    <%# 💡 経験値・ステータス表示 %>
+    <%# 経験値・ステータス表示 %>
     <% current_exp = user_char&.exp || 0 %>
     <% next_cap = current_lv * 500 %>
     <% progress = (current_exp.to_f / next_cap * 100).clamp(0, 100) %>

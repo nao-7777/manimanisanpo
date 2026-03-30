@@ -1,5 +1,4 @@
 <style>
-  /* --- 既存のスタイルはそのまま維持 --- */
   .log-show-body {
     background-color: transparent;
     min-height: 100vh;
@@ -112,7 +111,7 @@
     </div>
 
     <div style="text-align: center; margin-bottom: 30px;">
-      <%# 💡 修正ポイント：画像が添付されているミッションだけを抽出 %>
+      <%# 画像が添付されているミッションだけを抽出 %>
       <% photos = @walking_log.missions.select { |m| m.image.attached? } %>
       
       <% if photos.any? %>
@@ -128,7 +127,7 @@
           </div>
         <% end %>
       <% else %>
-        <%# 💡 1枚も写真がないときだけ、このメッセージを出す %>
+        <%# 画像がない場合の表示 %>
         <div class="instax-frame" style="width: 85%; height: 200px; display: flex; align-items: center; justify-content: center; transform: rotate(0deg); cursor: default;">
           <p style="color: #ccc; font-size: 12px;">思い出の写真はまだありません</p>
         </div>
@@ -146,7 +145,7 @@
       </div>
       <div class="stat-item">
         <span class="stat-unit">EXP</span>
-        <%# 💡 EXP計算は「画像に関係なく全ての完了済みミッション」をカウントする場合 %>
+        <%# EXP計算は「画像に関係なく全ての完了済みミッション」をカウントする場合 %>
         <% all_missions_count = @walking_log.missions.count %>
         <% safe_steps = @walking_log.steps || 0 %>
         <% safe_duration = @walking_log.duration || 0 %>
@@ -156,7 +155,7 @@
     </div>
 
     <div style="margin-top: 40px; color: #666; font-size: 14px; line-height: 1.8; border-left: 4px solid #65C7A4; padding-left: 15px;">
-      今日もお疲れ様！<br>
+      今日もお疲れ様。<br>
       この記録はノートに大切に保存されたよ。
     </div>
   </div>

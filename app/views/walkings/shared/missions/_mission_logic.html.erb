@@ -1,0 +1,95 @@
+<script>
+  let isFetchingMission = false;
+
+  async function fetchNewMission() {
+    if (isFetchingMission) return null;
+    isFetchingMission = true;
+    try {
+      const res = await fetch(`/walkings/random_mission?t=${Date.now()}`, { 
+        headers: { 'Accept': 'application/json' } 
+      });
+      return await res.json();
+    } catch (e) { return null; } finally { isFetchingMission = false; }
+  }
+
+  window.previewImage = function(input) {
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        document.getElementById('photo-preview').src = e.target.result;
+        document.getElementById('photo-preview-container').style.display = 'block';
+      }
+      reader.readAsDataURL(input.files[0]);
+    }
+  };
+
+  window.completeMission = async function(event) {
+    if (event) event.preventDefault();
+    const btn = document.getElementById('btn-complete');
+    if (!btn || btn.dataset.loading === "true") return;
+
+    const mt = document.getElementById('mission-text');
+    const mid = mt.dataset.missionId;
+    if (!mid || mid === "null" || mid === "") { await skipMission(); return; }
+
+    btn.dataset.loading = "true";
+    if (window.createParticles) window.createParticles(btn);
+    if (window.jumpFox) window.jumpFox();
+
+    const walkId = document.body.dataset.walkId || "<%= @walk&.id %>";
+    const token = document.querySelector('meta[name="csrf-token"]')?.content;
+    const formData = new FormData();
+    formData.append('mission_id', mid);
+
+    let url = `/walkings/${walkId}/complete_mission`;
+    let method = 'PATCH';
+    const fileInput = document.getElementById('camera-input');
+    
+    if (fileInput.files && fileInput.files[0]) {
+      formData.append('image', fileInput.files[0]);
+      url = `/walkings/${walkId}/upload_image`;
+      method = 'POST';
+    }
+
+    try {
+      const res = await fetch(url, {
+        method: method, headers: { 'Accept': 'application/json', 'X-CSRF-Token': token }, body: formData
+      });
+      const data = await res.json();
+      if (data.status === 'success' || data.image_url) {
+        if (data.image_url && window.addPhotoToAlbum) window.addPhotoToAlbum(data.image_url, mt.innerText);
+        setTimeout(() => {
+          if (data.next_mission) { mt.innerHTML = data.next_mission.title; mt.dataset.missionId = data.next_mission.id; }
+          btn.dataset.loading = "false";
+          document.getElementById('photo-preview-container').style.display = 'none';
+          fileInput.value = "";
+          if (window.showFoxTalk) showFoxTalk(window.getQuote('clear'));
+        }, 400);
+      }
+    } catch (e) { btn.dataset.loading = "false"; }
+  };
+
+  window.skipMission = async function(event) {
+    if (event) event.preventDefault();
+    const data = await fetchNewMission();
+    const mt = document.getElementById('mission-text');
+    if (data && mt) {
+      mt.innerHTML = data.title || "写真を撮ってクリアしよう！";
+      mt.dataset.missionId = data.id;
+      if (window.showFoxTalk) showFoxTalk(window.getQuote('skip'));
+    }
+    document.getElementById('photo-preview-container').style.display = 'none';
+  };
+
+  document.addEventListener("DOMContentLoaded", () => {
+    // ミッション初期化
+    const mt = document.getElementById('mission-text');
+    if (mt && (!mt.dataset.missionId || mt.dataset.missionId === "null")) skipMission();
+
+    // アルバム初期化
+    const album = document.getElementById('photo-album-content');
+    if (album && document.body.dataset.photoCount === "0") {
+      album.innerHTML = '<p id="no-photo-msg" class="text-center text-gray-400 py-10">まだ写真がありません</p>';
+    }
+  });
+</script>

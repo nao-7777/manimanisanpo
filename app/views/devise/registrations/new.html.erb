@@ -37,7 +37,7 @@
         </div>
 
         <%# 登録するボタン %>
-        <div class="text-center mb-10">
+        <div class="text-center mb-6">
           <%= f.submit "アカウント作成", 
               class: "w-full md:w-auto px-10 py-3 text-white font-bold text-lg rounded-full transition-all hover:opacity-90 hover:shadow-lg shadow-md cursor-pointer",
               style: "background-color: #65C7A4;" %>
@@ -45,33 +45,8 @@
 
       <% end %>
 
-      <%# または（ライン） %>
-      <div class="relative flex items-center mb-10">
-        <div class="flex-grow border-t border-gray-200"></div>
-        <span class="flex-shrink mx-4 text-sm text-gray-400 font-medium">またはSNSで登録</span>
-        <div class="flex-grow border-t border-gray-200"></div>
-      </div>
-
-      <%# SNS登録ボタン %>
-      <div class="flex justify-center gap-x-6 mb-12">
-        <%# Google %>
-        <%= link_to "#", class: "w-14 h-14 rounded-2xl flex items-center justify-center bg-[#6CB69B] text-white font-bold text-xl shadow-md transition-transform hover:scale-105" do %>
-          G
-        <% end %>
-        
-        <%# LINE %>
-        <%= link_to "#", class: "w-14 h-14 rounded-2xl flex items-center justify-center bg-[#6CB69B] text-white font-bold text-xl shadow-md transition-transform hover:scale-105" do %>
-          LINE
-        <% end %>
-
-        <%# X %>
-        <%= link_to "#", class: "w-14 h-14 rounded-2xl flex items-center justify-center bg-[#6CB69B] text-white font-bold text-xl shadow-md transition-transform hover:scale-105" do %>
-          X
-        <% end %>
-      </div>
-
       <%# 境界線 %>
-      <div class="border-t border-gray-200 mb-10"></div>
+      <div class="border-t border-gray-200 mb-10 mt-10"></div>
 
       <%# すでにアカウントをお持ちの方 %>
       <div class="text-center">

@@ -1,0 +1,39 @@
+<script>
+  window.createParticles = function(el) {
+    const rect = el.getBoundingClientRect();
+    for (let i = 0; i < 30; i++) {
+      const p = document.createElement('div');
+      p.style.cssText = `position:fixed;width:10px;height:10px;border-radius:50%;pointer-events:none;z-index:9999;left:${rect.left+rect.width/2}px;top:${rect.top+rect.height/2}px;background:${['#FFD700','#65C7A4','#EE8095'][Math.floor(Math.random()*3)]};--dx:${(Math.random()-0.5)*400}px;--dy:${(Math.random()-0.5)*400}px;animation:particle-burst 0.8s ease-out forwards;`;
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 800);
+    }
+  };
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const bar = document.getElementById('result-exp-bar');
+    const lv = document.getElementById('display-level');
+    if (!bar || !lv) return;
+
+    setTimeout(() => {
+      const isUp = bar.dataset.levelUp === "true";
+      const target = bar.dataset.targetPercent;
+
+      if (isUp) {
+        bar.style.width = "100%";
+        setTimeout(() => {
+          lv.innerText = bar.dataset.finalLevel;
+          lv.classList.add('level-bounce-effect');
+          window.createParticles(lv);
+          bar.style.transitionDuration = "0ms";
+          bar.style.width = "0%";
+          setTimeout(() => {
+            bar.style.transitionDuration = "1000ms";
+            bar.style.width = target + "%";
+          }, 50);
+        }, 1100);
+      } else {
+        bar.style.width = target + "%";
+      }
+    }, 500);
+  });
+</script>

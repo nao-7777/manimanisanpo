@@ -23,3 +23,14 @@ ja:
       signed_in: "ログインしました。"
       signed_out: "ログアウトしました。"
       already_signed_out: "ログアウトしました。"
+    mailer:
+      confirmation_instructions:
+        subject: "【まにまに散歩】メールアドレスの確認をお願いします"
+      reset_password_instructions:
+        subject: "【まにまに散歩】パスワード再設定のご案内"
+      unlock_instructions:
+        subject: "【まにまに散歩】アカウントのロック解除について"
+      email_changed:
+        subject: "【まにまに散歩】メールアドレスが変更されました"
+      password_change:
+        subject: "【まにまに散歩】パスワードが変更されました"

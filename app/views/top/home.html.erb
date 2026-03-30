@@ -1,11 +1,11 @@
-<%# 💡 今連れているキャラクターのデータを取得 %>
+<%# 今連れているキャラクターのデータを取得 %>
 <% active_char = current_user.user_characters.first %>
 <% current_lv = active_char&.level || 1 %>
 
-<%# 💡 進化後（Lv.10以上）かどうかの判定 %>
+<%# 進化後（Lv.10以上）かどうかの判定 %>
 <% is_v2 = current_lv >= 10 %>
 
-<%# 💡 進化後だけ位置やサイズを変えるためのクラス設定 %>
+<%# 進化後だけ位置やサイズを変えるためのクラス設定 %>
 <% fox_transform_class = is_v2 ? "w-[300vw] max-w-none -translate-y-20" : "w-[130vw] max-w-[500px]" %>
 
 <%# --- 全体の背景を神社の境内グラデーションに適用 --- %>
@@ -19,10 +19,8 @@
   </div>
 
   <%# --- 2. メインキャラ（背面・巨大） --- %>
-  <%# 💡 fox_transform_class を適用して、進化後だけサイズと位置を出し分け %>
   <div class="absolute top-[20%] left-1/2 -translate-x-1/2 <%= fox_transform_class %> h-auto z-0 pointer-events-none flex justify-center transition-all duration-500">
     <div class="relative w-full h-full">
-      <%# 💡 メソッド名 current_fox_image で画像を取得 %>
       <%= image_tag current_user.current_fox_image, class: "w-full h-auto object-contain filter drop-shadow-xl" %>
     </div>
   </div>
@@ -30,8 +28,8 @@
   <%# --- 3. お散歩ボタン（前面・位置固定） --- %>
   <div class="mt-auto w-full max-w-[240px] mb-30 z-20 pointer-events-auto">
     <%= link_to new_walking_path, class: "group relative flex items-center justify-center w-full" do %>
-      <div class="absolute inset-0 bg-[#EE8095] rounded-full blur-lg opacity-40 group-active:blur-md transition-all"></div>
-      <div class="relative w-full bg-[#EE8095] text-white text-2xl font-black py-6 rounded-full shadow-lg border-b-8 border-[#D81B60] flex items-center justify-center gap-2 transition-transform active:translate-y-1 active:border-b-0">
+      <div class="absolute inset-0 bg-[#F28FA3] rounded-full blur-lg opacity-40 group-active:blur-md transition-all"></div>
+      <div class="relative w-full bg-[#F28FA3] text-white text-2xl font-black py-6 rounded-full shadow-lg border-b-8 border-[#B55D6F] flex items-center justify-center gap-2 transition-transform active:translate-y-1 active:border-b-0">
         <span>お散歩する</span>
       </div>
     <% end %>

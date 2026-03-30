@@ -9,7 +9,7 @@
     <%= link_to root_path, class: "flex flex-col items-center justify-center transition-all active:scale-90" do %>
       <%# 丸：70px 固定 %>
       <div class="w-[70px] h-[70px] rounded-full flex items-center justify-center shadow-md mb-1.5 <%= is_home ? 'bg-[#65C7A4]' : 'bg-white' %>">
-        <%# アイコン：少し小さくして中心に %>
+        <%# アイコン %>
         <i class="bi bi-house-door-fill text-[30px] leading-none <%= is_home ? 'text-white' : 'text-[#65C7A4]' %>"></i>
       </div>
       <span class="text-[12px] font-black tracking-tighter <%= is_home ? 'text-[#65C7A4]' : 'text-gray-500' %>">ホーム</span>
@@ -24,7 +24,7 @@
       <span class="text-[12px] font-black tracking-tighter <%= is_characters ? 'text-[#65C7A4]' : 'text-gray-500' %>">神社</span>
     <% end %>
 
-    <%# 3. 記録（でかく見えないように調整） %>
+    <%# 3. 記録 %>
     <% is_logs = (controller_name == 'walking_logs') %>
     <%= link_to walking_logs_path, class: "flex flex-col items-center justify-center transition-all active:scale-90" do %>
       <div class="w-[70px] h-[70px] rounded-full flex items-center justify-center shadow-md mb-1.5 <%= is_logs ? 'bg-[#65C7A4]' : 'bg-white' %>">

@@ -1,0 +1,122 @@
+<style>
+  .log-index-body {
+    min-height: 100vh;
+    padding: 40px 15px;
+    font-family: 'Hiragino Maru Gothic ProN', sans-serif;
+  }
+
+  .notebook-paper {
+    background: #ffffff;
+    max-width: 450px;
+    margin: 0 auto;
+    min-height: 80vh;
+    position: relative;
+    box-shadow: 8px 8px 20px rgba(0,0,0,0.1);
+    border-radius: 2px;
+    padding: 60px 25px 40px 70px;
+    background-image: radial-gradient(#e0e0e0 1px, transparent 1px);
+    background-size: 25px 25px;
+  }
+
+  .notebook-paper::before {
+    content: '';
+    position: absolute;
+    left: 25px;
+    top: 0;
+    bottom: 0;
+    width: 25px;
+    background-image: radial-gradient(circle, #E2E2D0 7px, transparent 8.5px);
+    background-size: 25px 45px;
+  }
+
+  .notebook-paper::after {
+    content: '';
+    position: absolute;
+    left: 60px;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: rgba(255, 100, 100, 0.3);
+  }
+
+  .page-title {
+    position: absolute;
+    top: 20px;
+    left: 80px;
+    font-size: 18px;
+    font-weight: 900;
+    color: #555;
+    border-bottom: 2px solid #65C7A4;
+  }
+
+  .log-item {
+    display: block;
+    text-decoration: none;
+    color: #444;
+    margin-bottom: 35px;
+    position: relative;
+    border-bottom: 1px dashed #ccc;
+    padding-bottom: 10px;
+    transition: transform 0.2s;
+  }
+
+  .log-item:hover {
+    transform: translateX(5px);
+  }
+
+  .log-date-label {
+    font-size: 12px;
+    color: #EE8095;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  .log-main-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .log-steps {
+    font-size: 22px;
+    font-weight: 900;
+    font-family: 'Courier New', monospace;
+  }
+
+  .log-steps small {
+    font-size: 12px;
+    margin-left: 2px;
+  }
+
+  .log-info-right {
+    text-align: right;
+  }
+
+  .log-duration {
+    font-size: 13px;
+    color: #777;
+  }
+
+  .log-exp {
+    font-size: 14px;
+    font-weight: 800;
+    color: #49B394;
+  }
+
+  .no-data-msg {
+    text-align: center;
+    margin-top: 100px;
+    color: #aaa;
+    font-style: italic;
+  }
+</style>
+
+<div class="log-index-body">
+  <div class="notebook-paper">
+    <div class="page-title">
+      <%= title %>
+    </div>
+    <%= yield %>
+  </div>
+</div>

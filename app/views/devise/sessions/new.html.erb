@@ -1,6 +1,6 @@
 <div class="min-h-screen pt-24 pb-12 flex flex-col items-center justify-center bg-gradient-to-b from-[#ffe2ea] via-[#ffe2ea] via-20% to-[#97DBC1]">
   
-  <%# 画面全体のコンテナ。昨日のトップと同じグラデーションを背景に指定 %>
+  <%# 画面全体のコンテナ %>
   <div class="w-full max-w-md px-4">
 
     <%# 白いカード（すりガラス風） %>
@@ -39,40 +39,12 @@
       <% end %>
 
       <%# パスワードを忘れた場合（リンク） %>
-      <div class="text-center mb-10">
+      <div class="text-center mb-8">
         <%= link_to "パスワードを忘れた場合", new_password_path(resource_name), class: "text-sm text-[#F7A7A2] hover:text-[#f38d87] underline" %>
       </div>
 
-      <%# または（ライン） %>
-      <div class="relative flex items-center mb-10">
-        <div class="flex-grow border-t border-gray-300"></div>
-        <span class="flex-shrink mx-4 text-sm text-gray-500 font-medium">または</span>
-        <div class="flex-grow border-t border-gray-300"></div>
-      </div>
-
-      <%# SNSログインボタン %>
-      <div class="flex justify-center gap-x-6 mb-12">
-        <%# Google %>
-        <%= link_to "#", class: "w-14 h-14 rounded-2xl flex items-center justify-center bg-[#6CB69B] text-white font-bold text-xl shadow-md transition-transform hover:scale-105" do %>
-          <span class="sr-only">Googleでログイン</span>
-          G
-        <% end %>
-        
-        <%# LINE %>
-        <%= link_to "#", class: "w-14 h-14 rounded-2xl flex items-center justify-center bg-[#6CB69B] text-white font-bold text-xl shadow-md transition-transform hover:scale-105" do %>
-          <span class="sr-only">LINEでログイン</span>
-          LINE
-        <% end %>
-
-        <%# X (Twitter) %>
-        <%= link_to "#", class: "w-14 h-14 rounded-2xl flex items-center justify-center bg-[#6CB69B] text-white font-bold text-xl shadow-md transition-transform hover:scale-105" do %>
-          <span class="sr-only">Xでログイン</span>
-          X
-        <% end %>
-      </div>
-
-      <%# 境界線 %>
-      <div class="border-t border-gray-300 mb-10"></div>
+      <%# 境界線（SNSセクションを消したため、少し余白を広めに調整） %>
+      <div class="border-t border-gray-300 mb-10 mt-4"></div>
 
       <%# 初めての方はこちら %>
       <div class="text-center">
