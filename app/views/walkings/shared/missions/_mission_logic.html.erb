@@ -34,7 +34,7 @@
 
     btn.dataset.loading = "true";
     if (window.createParticles) window.createParticles(btn);
-    if (window.jumpFox) window.jumpFox();
+    if (window.jumpkoyoi) window.jumpkoyoi();
 
     const walkId = document.body.dataset.walkId || "<%= @walk&.id %>";
     const token = document.querySelector('meta[name="csrf-token"]')?.content;
@@ -63,7 +63,7 @@
           btn.dataset.loading = "false";
           document.getElementById('photo-preview-container').style.display = 'none';
           fileInput.value = "";
-          if (window.showFoxTalk) showFoxTalk(window.getQuote('clear'));
+          if (window.showKoyoiTalk) showKoyoiTalk(window.getQuote('clear'));
         }, 400);
       }
     } catch (e) { btn.dataset.loading = "false"; }
