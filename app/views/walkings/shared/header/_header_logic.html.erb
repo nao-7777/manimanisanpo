@@ -1,6 +1,5 @@
 <script>
   (function() {
-    // 💡 Turbo環境では DOMContentLoaded の代わりに turbo:load を使うのが鉄則です
     const initializeWalkHeader = () => {
       const walkId = <%= @walk.id %>;
       const storageKey = `walk_data_${walkId}`;
@@ -78,7 +77,7 @@
         } catch (e) {}
       }, 10000);
 
-      // 💡 ボタンの取得とイベント登録
+      // ボタンの取得とイベント登録
       const stopBtn = document.getElementById('btn-finish-walking-trigger');
       if (stopBtn) {
         // 前のイベントが残らないよう一度リセットしてから登録
