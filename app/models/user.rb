@@ -8,8 +8,8 @@ class User < ApplicationRecord
   
   after_create :add_default_character
 
-  # 💡 ホーム画面で表示する狐の画像パスを返す
-  def current_fox_image
+  # ホーム画面で表示する狐の画像パスを返す
+  def current_koyoi_image
     # ユーザーに紐づく最初のキャラクター（金宵）を取得
     active_char = user_characters.first
     
@@ -35,7 +35,7 @@ class User < ApplicationRecord
         character: first_char, 
         level: 1, 
         exp: 0, 
-        character_key: "金宵"
+        character_key: "koyoi"
       )
     end
   end

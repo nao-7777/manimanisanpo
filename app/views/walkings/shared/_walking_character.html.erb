@@ -6,33 +6,33 @@
 <% 
   if is_v2
     # 進化後 (v2) 
-    fox_container_style = "position: absolute; top: 380px; left: 50%; width: 900px !important; max-width: none !important; transform: translateX(-50%); pointer-events: none; z-index: 20;"
+    koyoi_container_style = "position: absolute; top: 380px; left: 50%; width: 900px !important; max-width: none !important; transform: translateX(-50%); pointer-events: none; z-index: 20;"
     bubble_style = "position: absolute; top: 310px; left: 270px;"
   else
     # 進化前 (v1) 
-    fox_container_style = "position: absolute; bottom: -80px; left: 50%; width: 400px; transform: translateX(-50%); pointer-events: none; z-index: 20;"
+    koyoi_container_style = "position: absolute; bottom: -80px; left: 50%; width: 400px; transform: translateX(-50%); pointer-events: none; z-index: 20;"
     bubble_style = "position: absolute; top: 290px; left: 20px;"
   end
 %>
 
 <%# --- キャラクター本体と吹き出し --- %>
-<div style="<%= fox_container_style %>">
+<div style="<%= koyoi_container_style %>">
   <%# 吹き出し %>
-  <div id="fox-bubble" 
+  <div id="koyoi-bubble" 
        style="<%= bubble_style %> background: white; padding: 7px 18px; border-radius: 2rem; border: 2.5px solid #333; font-weight: 900; font-size: 15px; box-shadow: 5px 5px 0px #333; display: none; z-index: 30; white-space: nowrap; opacity: 1;">
   </div>
   
   <%# 画像本体 %>
-  <%= image_tag current_user.current_fox_image, 
-                id: "fox-image", 
+  <%= image_tag current_user.current_koyoi_image, 
+                id: "koyoi-image", 
                 style: "width: 100%; height: auto; display: block; transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);" %>
 </div>
 
 <%# --- キャラクターの動き（JS） --- %>
 <script>
-  // 1. 狐のジャンプ
-  window.jumpFox = function() {
-    const img = document.getElementById('fox-image');
+  // 1. ジャンプ
+  window.jumpKoyoi = function() {
+    const img = document.getElementById('koyoi-image');
     if (img) {
       img.style.transform = "translateY(-30px)";
       setTimeout(() => { img.style.transform = "translateY(0)"; }, 200);
@@ -40,13 +40,13 @@
   };
 
   // 2. セリフ表示
-  window.showFoxTalk = function(text) {
-    const bubble = document.getElementById('fox-bubble');
+  window.showKoyoiTalk = function(text) {
+    const bubble = document.getElementById('koyoi-bubble');
     if (!bubble) return;
-    if (window.foxTimer) clearTimeout(window.foxTimer);
+    if (window.koyoiTimer) clearTimeout(window.koyoiTimer);
     bubble.innerText = text;
     bubble.style.display = "block";
     bubble.style.opacity = "1";
-    window.foxTimer = setTimeout(() => { bubble.style.opacity = "0"; }, 5000);
+    window.koyoiTimer = setTimeout(() => { bubble.style.opacity = "0"; }, 5000);
   };
 </script>

@@ -28,7 +28,7 @@
 
     <%# 麻の葉模様レイヤー %>
     <div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none;
-                background-image: url('<%= asset_path('麻の葉.png') %>');
+                background-image: url('<%= asset_path('asanoha.png') %>');
                 background-size: 650px;
                 background-repeat: repeat;
                 background-position: left top;
@@ -44,7 +44,7 @@
         <header class="fixed top-0 left-0 w-full flex justify-between items-center p-6 z-50 bg-transparent">
           <%= link_to root_path, class: "transition-transform hover:scale-105 active:scale-95" do %> 
             <div class="bg-white rounded-full w-12 h-12 flex items-center justify-center shadow-md overflow-hidden">
-              <%= image_tag "まにまに散歩ロゴマーク.png", class: "w-full h-full object-contain" %>
+              <%= image_tag "lopgomark.png", class: "w-full h-full object-contain" %>
             </div>
           <% end %>
           <%= link_to "ログイン", new_user_session_path, 

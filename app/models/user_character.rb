@@ -25,7 +25,7 @@ class UserCharacter < ApplicationRecord
   end
 
   # 初期値を「金宵（こよい）」にする
-  DEFAULT_CHARACTER_KEY = "金宵"
+  DEFAULT_CHARACTER_KEY = "koyoi"
 
   def current_avatar_path
     # character_key が空なら "金宵" を使う（安全策）
