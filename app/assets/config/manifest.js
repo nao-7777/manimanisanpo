@@ -1,14 +1,15 @@
 // app/assets/config/manifest.js
 
-// 画像フォルダを丸ごと読み込む
+// 1. 画像フォルダ
 //= link_tree ../images
 
-// スタイルシートフォルダを読み込む（.cssファイルのみ）
-//= link_directory ../stylesheets .css
+// 2. CSSフォルダ
+// stylesheets ではなく tailwind フォルダを指定します
+//= link_directory ../tailwind .css
 
-// JS関連（もしビルド済みファイルがあるなら）
+// 3. JS関連
 //= link_tree ../../javascript .js
 //= link_tree ../../../vendor/javascript .js
 
-// Tailwindなど特定のファイル
+// 4. 個別指定
 //= link tailwind.css
