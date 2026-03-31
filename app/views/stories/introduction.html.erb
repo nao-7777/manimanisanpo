@@ -1,23 +1,22 @@
 <% content_for :no_nav, true %>
 
-<%# 画面を完全に固定し、スクロールを物理的に禁止する設定 %>
-<div class="fixed inset-0 w-full h-[100dvh] flex flex-col items-center justify-center p-4 overflow-hidden bg-white">
+<div class="fixed inset-0 w-full h-[100dvh] flex flex-col items-center justify-center p-4 overflow-hidden">
   
   <div class="relative z-10 flex flex-col items-center animate-fade-in w-full max-w-lg">
     
     <%# --- キャラエリア --- %>
-    <div class="w-full h-[400px] md:h-[550px] flex items-center justify-center animate-float">
+    <div class="w-full h-[480px] md:h-[600px] flex items-center justify-center animate-float">
       <%= image_tag "characters/koyoi_v1.png", class: "w-full h-full object-contain" %>
     </div>
 
     <%# --- セリフカード --- %>
-    <div id="story-card" class="relative w-full max-w-[440px] cursor-pointer -mt-8 md:-mt-12" onclick="window.nextDialogue()">
+    <div id="story-card" class="relative w-full max-w-[440px] cursor-pointer -mt-4 md:-mt-6" onclick="window.nextDialogue()">
       <div class="w-full bg-white/40 backdrop-blur-xl rounded-[2.5rem] px-6 py-8 md:px-10 md:py-12 shadow-[0_10px_40px_rgba(0,0,0,0.08)] border border-white/60 transition-all active:scale-95 active:bg-white/50">
         
-        <div id="dialogue-text"
+        <div id="dialogue-text" 
              class="text-gray-800 leading-relaxed font-black text-lg md:text-xl text-center flex items-center justify-center min-h-[100px]"
              style="letter-spacing: -0.02em; backface-visibility: hidden; transform: translateZ(0);">
-          ……驚かせてしまったか。ふふ、いきなり目の前に現れたら<br class='md:hidden'>無理もない。
+          ……驚かせてしまったか。ふふ、<br class='md:hidden'>いきなり目の前に現れたら<br class='md:hidden'>無理もない。
         </div>
 
         <div class="absolute bottom-6 right-8 flex items-center gap-1 text-[#2E7D32] font-black animate-bounce-x pointer-events-none">
@@ -38,11 +37,11 @@
   (function() {
     const dialogues = [
       "……驚かせてしまったか。ふふ、<br class='md:hidden'>いきなり目の前に現れたら<br class='md:hidden'>無理もない。",
-      "俺の名は金宵（こよい）。一応、この土地を守る神様<br class='md:hidden'>……だったんだがな。",
+      "俺の名は金宵（こよい）。<br class='md:hidden'>一応、この土地を守る神<br class='md:hidden'>……だったんだがな。",
       "今は力を失って、こんな<br class='md:hidden'>ちんまりした姿になってしまった。<br class='md:hidden'>……困ったもんだ。",
       "だが、お前の魂を見て<br class='md:hidden'>ピンときたんだ。お前なら、<br class='md:hidden'>俺を助けてくれそうだとな。",
       "お前の散歩に、俺も一緒に<br class='md:hidden'>連れていってくれないか？"
-    ];
+      ];
 
     let currentIndex = 0;
     let isWaiting = false;
@@ -67,7 +66,7 @@
             textElement.style.opacity = 1;
             isWaiting = false;
           } else if (currentIndex === dialogues.length) {
-            textElement.innerHTML = "……ありがとう。お前の見せる景色、<br class='md:hidden'>楽しみにしているぞ。";
+            textElement.innerHTML = "……ありがとう。お前の見せる<br class='md:hidden'>景色、楽しみにしているぞ。";
             textElement.style.visibility = "visible";
             textElement.style.opacity = 1;
             isWaiting = false;
