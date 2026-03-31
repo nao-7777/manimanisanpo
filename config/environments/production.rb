@@ -33,11 +33,11 @@ Rails.application.configure do
 
   config.action_mailer.smtp_settings = {
     address:              'smtp.resend.com',
-    port:                 465,        # 587で弾かれる対策として、より強固な465に変更
+    port:                 465,
     user_name:            'resend',
     password:             ENV['RESEND_API_KEY'],
     authentication:       'plain',
-    tls:                  true,       # 465番ポートを使う場合は true にする必要があります
+    tls:                  true,
     enable_starttls_auto: false
   }
 end
