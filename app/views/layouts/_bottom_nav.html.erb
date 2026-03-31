@@ -19,7 +19,7 @@
     <% is_characters = (controller_name == 'characters') %>
     <%= link_to characters_path, class: "flex flex-col items-center justify-center transition-all active:scale-90" do %>
       <div class="w-[60px] h-[60px] rounded-full flex items-center justify-center shadow-md mb-1.5 <%= is_characters ? 'bg-[#65C7A4]' : 'bg-white' %>">
-        <i class="fa-solid fa-torii-gate text-[27px] mt-[2px] <%= is_characters ? 'text-white' : 'text-[#65C7A4]' %>"></i>
+        <i class="fa-solid fa-torii-gate text-[27px] mt-[0px] <%= is_characters ? 'text-white' : 'text-[#65C7A4]' %>"></i>
       </div>
       <span class="text-[12px] font-black tracking-tighter <%= is_characters ? 'text-[#65C7A4]' : 'text-gray-500' %>">神社</span>
     <% end %>
