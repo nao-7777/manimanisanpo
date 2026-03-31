@@ -24,23 +24,20 @@
 </div>
 
 <script>
-  // クリックで1歩
   (function() {
     let isSensorInitialized = false;
     window.addEventListener('click', (e) => {
-      // 特定のボタン以外を叩いた時
+      // ボタンやリンクをクリックした時はスルー
       if (e.target.closest('#btn-camera-container,#walking-mission-card,#walking-header-container,#btn-album,#btn-map,button,a')) return;
       
-      // 最初のクリックでセンサーなどの初期化を走らせる
+      // iOSなどのブラウザ制限で「ユーザーの操作（クリック）」をきっかけにしないとセンサー許可が出せないため、初期化処理だけ残します
       if (!isSensorInitialized) { 
-        if (window.requestSensorPermission) window.requestSensorPermission();
+        if (window.requestSensorPermission) {
+          window.requestSensorPermission();
+        }
         isSensorInitialized = true; 
-        return; 
+        console.log("Sensor initialized by user interaction.");
       }
-      
-      // ヘッダーの関数を叩いて歩数を増やす
-      window.steps = (window.steps || 0) + 1;
-      if (window.updateStepDisplay) window.updateStepDisplay(window.steps);
     });
   })();
 </script>

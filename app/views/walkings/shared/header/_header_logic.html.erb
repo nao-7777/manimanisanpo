@@ -1,3 +1,28 @@
+<% content_for :no_nav, true %>
+<% content_for :is_walking_mode, true %>
+
+<div 
+  data-controller="walking-mode"
+  data-walking-mode-walk-id-value="<%= @walk.id %>"
+  data-walking-mode-initial-steps-value="<%= @walk.steps || 0 %>"
+  data-walking-mode-initial-duration-value="<%= @walk.duration || 0 %>"
+  style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 100; overflow: hidden; pointer-events: none;">
+  
+  <%# --- ヘッダー --- %>
+  <%= render 'walkings/shared/header/walking_header' %>
+  
+  <%# --- お題カード --- %>
+  <%= render 'walkings/shared/missions/walking_mission' %>
+
+  <%# --- キャラクター表示 --- %>
+  <%= render 'walkings/shared/walking_character' %>
+</div>
+
+<%# --- お散歩モードのボトムナビ --- %>
+<div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999; pointer-events: none;">
+  <%= render 'walkings/shared/walking_footer' %>
+</div>
+
 <script>
   (function() {
     const initializeWalkHeader = () => {
@@ -60,12 +85,21 @@
 
       window.requestSensorPermission = async function() {
         if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
-          const response = await DeviceMotionEvent.requestPermission();
-          if (response === 'granted') window.addEventListener('devicemotion', window.handleMotion);
+          try {
+            const response = await DeviceMotionEvent.requestPermission();
+            if (response === 'granted') window.addEventListener('devicemotion', window.handleMotion);
+          } catch (e) { console.error(e); }
         } else {
           window.addEventListener('devicemotion', window.handleMotion);
         }
       };
+
+      // 【修正箇所】タップで歩数を増やすのをやめ、最初のタップでセンサーを起動するだけに
+      const startSensorOnce = () => {
+        window.requestSensorPermission();
+        document.removeEventListener('click', startSensorOnce);
+      };
+      document.addEventListener('click', startSensorOnce);
 
       const autoSaveInterval = setInterval(async () => {
         try {
@@ -80,7 +114,6 @@
       // ボタンの取得とイベント登録
       const stopBtn = document.getElementById('btn-finish-walking-trigger');
       if (stopBtn) {
-        // 前のイベントが残らないよう一度リセットしてから登録
         stopBtn.onclick = async (e) => {
           e.preventDefault();
           if (!confirm('お散歩を終了して記録を保存しますか？')) return;
@@ -106,7 +139,6 @@
       }, { once: true });
     };
 
-    // 初回読み込みと、Turboによる遷移の両方に対応させる
     document.addEventListener('turbo:load', initializeWalkHeader);
   })();
 </script>

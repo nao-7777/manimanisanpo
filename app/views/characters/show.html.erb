@@ -1,8 +1,8 @@
+<%# app/views/characters/show.html.erb %>
 <% content_for(:hide_bottom_nav, true) %>
 
 <div class="char-detail-fullpage">
-  <div class="char-bg-pattern"></div>
-  
+  <%# 閉じるボタン %>
   <%= link_to characters_path, class: "close-btn" do %>
     <i class="bi bi-x-lg"></i>
   <% end %>
@@ -14,29 +14,48 @@
     </div>
 
     <div class="char-main-card">
-      <div class="card-scroll-wrapper" id="cardWrapper">
-        <%# 進化前 %>
+      <div class="card-scroll-wrapper" id="cardWrapper_<%= @character.id %>">
         <div class="card-item">
           <div class="img-wrapper">
-            <%= image_tag @character.image_v1, class: "char-img" %>
+            <% 
+              display_img_v1 = if @character.image_v1.present?
+                                if @character.image_v1.is_a?(String)
+                                  @character.image_v1
+                                elsif @character.image_v1.respond_to?(:attached?) && @character.image_v1.attached?
+                                  @character.image_v1
+                                else
+                                  "default_char.png"
+                                end
+                              else
+                                "default_char.png"
+                              end
+            %>
+            <%= image_tag display_img_v1, class: "char-img" %>
           </div>
         </div>
 
-        <%# 進化後 %>
         <div class="card-item">
           <div class="img-wrapper evolution-img-container">
-            <%# ユーザーの現在のレベルを取得して判定 %>
-            <% user_char = current_user.user_characters.find_by(character_id: @character.id) %>
-            <% current_lv = user_char&.level || 1 %>
-
+            <% current_lv = @user_character&.level || 1 %>
             <% if current_lv >= 10 %>
-              <%# --- レベル10以上の時：通常表示 --- %>
-              <%= image_tag @character.image_v2, class: "char-img v2-img bust-up-mode", id: "v2Image" %>
-              <button class="toggle-view-btn" id="viewToggleBtn">
+              <% 
+                display_img_v2 = if @character.image_v2.present?
+                                  if @character.image_v2.is_a?(String)
+                                    @character.image_v2
+                                  elsif @character.image_v2.respond_to?(:attached?) && @character.image_v2.attached?
+                                    @character.image_v2
+                                  else
+                                    "default_char.png"
+                                  end
+                                else
+                                  "default_char.png"
+                                end
+              %>
+              <%= image_tag display_img_v2, class: "char-img v2-img bust-up-mode", id: "v2Image_#{@character.id}" %>
+              <button class="toggle-view-btn" id="viewToggleBtn_<%= @character.id %>">
                 <i class="bi bi-arrows-angle-expand"></i> 全身を見る
               </button>
             <% else %>
-              <%# --- レベル9以下の時：ロック表示 --- %>
               <div style="text-align: center; color: #38423B; opacity: 0.6;">
                 <i class="bi bi-lock-fill" style="font-size: 3rem; display: block; margin-bottom: 10px;"></i>
                 <span style="font-weight: 800; font-size: 14px;">Lv.10で解放</span>
@@ -46,14 +65,13 @@
         </div>
       </div>
       
-      <div class="dots" id="dotContainer">
+      <div class="dots" id="dotContainer_<%= @character.id %>">
         <span class="dot active"></span>
         <span class="dot"></span>
       </div>
     </div>
 
-    <%# 経験値・ステータス表示 %>
-    <% current_exp = user_char&.exp || 0 %>
+    <% current_exp = @user_character&.exp || 0 %>
     <% next_cap = current_lv * 500 %>
     <% progress = (current_exp.to_f / next_cap * 100).clamp(0, 100) %>
 
@@ -65,117 +83,84 @@
             <span style="color: #ffffff !important; font-size: 10px; font-weight: 800;">EXP <%= current_exp %> / <%= next_cap %></span>
           </div>
           <div class="exp-bar-bg" style="background-color: rgba(255, 255, 255, 0.8) !important; height: 8px; border-radius: 4px; overflow: hidden; width: 100%;">
-           <div class="exp-fill" style="width: <%= progress %>%; height: 100%; background-color: #65C7A4 !important;"></div>
+            <div class="exp-fill" style="width: <%= progress %>%; height: 100%; background-color: #65C7A4 !important;"></div>
           </div>
         </div>
       </div>
       <div class="st-right">
         <div class="love-label" style="color: #ffffff !important; font-size: 10px; font-weight: bold; margin-bottom: 3px; text-align: right;">親愛度</div>
         <div class="stars">
+          <%# 星の表示ロジックを元のまま固定 %>
           <i class="bi bi-star-fill active"></i><i class="bi bi-star"></i><i class="bi bi-star"></i><i class="bi bi-star"></i><i class="bi bi-star"></i>
         </div>
       </div>
     </div>
 
-    <%# 説明文パネル %>
-    <div class="description-panel" style="padding: 0; overflow: hidden; display: flex; flex-direction: column; align-items: center; height: auto; max-height: none;">
-      <div class="card-scroll-wrapper" id="descWrapper" style="height: auto; min-height: 120px; overflow-y: hidden;">
-        
-        <%# 1枚目：進化前説明 %>
+    <div class="description-panel">
+      <div class="card-scroll-wrapper" id="descWrapper_<%= @character.id %>" style="height: auto; min-height: 120px; overflow-y: hidden;">
         <div class="card-item" style="padding: 20px 24px; align-items: flex-start; min-width: 100%;">
           <div class="description-section" style="width: 100%;">
             <h3 style="font-size: 11px; color: #65C7A4; margin-bottom: 5px; font-weight: 800;">[ 形態 I ]</h3>
             <p class="intro-text"><%= @character.description %></p>
           </div>
         </div>
-
-        <%# 2枚目：進化後説明 %>
-        <% if current_lv >= 10 && @character.respond_to?(:description_v2) && @character.description_v2.present? %>
-          <div class="card-item" style="padding: 20px 24px; align-items: flex-start; min-width: 100%;">
-            <div class="description-section" style="width: 100%;">
-              <h3 style="font-size: 11px; color: #EE8095; margin-bottom: 5px; font-weight: 800;">[ 形態 II ]</h3>
-              <p class="intro-text"><%= @character.description_v2 %></p>
-            </div>
-          </div>
-        <% end %>
       </div>
-
-      <%# 説明文用のドット（Lv.10以上の時のみ） %>
-      <% if current_lv >= 10 %>
-        <div class="dots" id="descDotContainer" style="margin-top: 0; margin-bottom: 15px;">
-          <span class="dot active"></span>
-          <span class="dot"></span>
-        </div>
-      <% end %>
     </div>
   </div>
 </div>
 
 <style>
-nav, .bottom-nav, #bottom-navigation, footer, .fixed-bottom { display: none !important; }
+/* --- ボトムナビと既存ナビの完全非表示 --- */
+[class*="bottom_nav"], nav, .fixed.bottom-2, footer { display: none !important; }
+
+/* --- 背景透過のための親要素設定 --- */
+body, main { background: transparent !important; }
 
 .char-detail-fullpage {
-  position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 99999;
-  background: radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.5), transparent 30%),
-              linear-gradient(to bottom, #F5F5F0 0%, #F5F5F0 35%, #A4D5BD 100%);
-  display: flex; flex-direction: column; padding: 30px 24px; box-sizing: border-box; overflow: hidden;
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 2000 !important;
+  background: transparent !important; 
+  display: flex;
+  flex-direction: column;
+  padding: 15px 24px 50px;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
-.char-bg-pattern {
-  position: absolute; inset: 0; z-index: -1;
-  background-image: url('<%= asset_path('麻の葉.png') %>');
-  background-size: 650px; opacity: 0.12; mix-blend-mode: multiply;
+.char-container {
+  width: 100%; max-width: 420px; height: 100%; margin: 0 auto;
+  display: flex; flex-direction: column; gap: 10px;
+  position: relative;
 }
-
-.char-container { width: 100%; max-width: 420px; height: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
 
 .close-btn {
-  position: absolute; top: 30px; right: 24px; width: 42px; height: 42px; background: white;
+  position: absolute; top: 15px; right: 24px;
+  width: 42px; height: 42px; background: white;
   border-radius: 50%; display: flex; align-items: center; justify-content: center;
   box-shadow: 0 4px 15px rgba(0,0,0,0.1); z-index: 100; color: #333; text-decoration: none;
 }
 
-.char-header { display: flex; align-items: center; gap: 10px; padding-top: 10px; }
+.char-header { display: flex; align-items: center; gap: 10px; padding-top: 10px; flex-shrink: 0; }
 .char-no { background: #38423B; color: #fff; font-size: 10px; padding: 3px 10px; border-radius: 4px; font-weight: bold; }
 .char-name { font-size: 1.8rem; font-weight: 900; margin: 0; color: #333; }
 
 .char-main-card {
   background: white; border-radius: 28px; padding: 15px; box-shadow: 0 12px 40px rgba(0,0,0,0.06);
-  flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  overflow: hidden;
+  flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden;
 }
 
 .card-scroll-wrapper {
   display: flex; width: 100%; height: 100%; overflow-x: auto;
-  scroll-snap-type: x mandatory; scroll-behavior: smooth; scrollbar-width: none;
+  scroll-snap-type: x mandatory; scrollbar-width: none;
 }
 .card-scroll-wrapper::-webkit-scrollbar { display: none; }
 .card-item { min-width: 100%; height: 100%; scroll-snap-align: center; display: flex; align-items: center; justify-content: center; }
 
-.img-wrapper { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; position: relative; }
-.evolution-img-container { overflow: hidden; width: 100%; height: 100%; }
-
-.char-img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  transform-origin: center center; 
-}
-
-.bust-up-mode {
-  transform: scale(4) translateY(35%); 
-}
-
-.toggle-view-btn {
-  position: absolute; bottom: 0; right: 0; background: rgba(56, 66, 59, 0.7);
-  color: white; border: none; padding: 8px 14px; border-radius: 12px 0 0 0; font-size: 11px;
-  backdrop-filter: blur(4px); z-index: 10;
-}
-
-.dots { margin-top: 10px; display: flex; gap: 10px; }
-.dot { width: 9px; height: 9px; background: rgba(101, 199, 164, 0.2); border-radius: 50%; transition: 0.3s; }
-.dot.active { background: #65C7A4; transform: scale(1.2); }
+.img-wrapper { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+.char-img { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; }
 
 .status-panel {
   background: rgba(94, 104, 97, 0.95); border-radius: 22px; padding: 15px 24px;
@@ -184,52 +169,12 @@ nav, .bottom-nav, #bottom-navigation, footer, .fixed-bottom { display: none !imp
 .st-left { display: flex; align-items: center; gap: 20px; flex-grow: 1; }
 .lv-box span { font-size: 28px; font-weight: 900; display: block; line-height: 1; }
 .stars { font-size: 14px; margin-top: 5px; color: rgba(255,255,255,0.3); }
-.stars i.active { color: #EE8095; }
+.stars i.active { color: #EE8095 !important; }
 
-.description-panel {
-  background: rgba(235, 230, 215, 0.7); border-radius: 22px; flex-shrink: 0;
-}
+.description-panel { background: rgba(235, 230, 215, 0.7); border-radius: 22px; flex-shrink: 0; }
 .intro-text { font-size: 0.92rem; line-height: 1.7; color: #444; margin: 0; text-align: left; }
+
+.dots { margin-top: 10px; display: flex; gap: 10px; flex-shrink: 0; }
+.dot { width: 9px; height: 9px; background: rgba(101, 199, 164, 0.2); border-radius: 50%; }
+.dot.active { background: #65C7A4; transform: scale(1.2); }
 </style>
-
-<script>
-document.addEventListener('turbo:load', () => {
-  const wrapper = document.getElementById('cardWrapper');
-  const dots = document.querySelectorAll('#dotContainer .dot');
-  const toggleBtn = document.getElementById('viewToggleBtn');
-  const v2Image = document.getElementById('v2Image');
-  const descWrapper = document.getElementById('descWrapper');
-  const descDots = document.querySelectorAll('#descDotContainer .dot');
-
-  // 説明文用スクロール制御
-  if (descWrapper && descDots.length > 0) {
-    descWrapper.addEventListener('scroll', () => {
-      const index = Math.round(descWrapper.scrollLeft / descWrapper.clientWidth);
-      descDots.forEach((dot, i) => dot.classList.toggle('active', i === index));
-    });
-  }
-
-  // イラスト用スクロール制御
-  if (wrapper) {
-    wrapper.addEventListener('scroll', () => {
-      const index = Math.round(wrapper.scrollLeft / wrapper.clientWidth);
-      dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
-    });
-  }
-
-  // 表示切り替えボタン制御
-  if (toggleBtn && v2Image) {
-    toggleBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      const isBustUp = v2Image.classList.contains('bust-up-mode');
-      if (isBustUp) {
-        v2Image.classList.remove('bust-up-mode');
-        toggleBtn.innerHTML = '<i class="bi bi-arrows-angle-expand"></i> 全身を見る';
-      } else {
-        v2Image.classList.add('bust-up-mode');
-        toggleBtn.innerHTML = '<i class="bi bi-arrows-angle-contract"></i> 顔を見る';
-      }
-    });
-  }
-});
-</script>
