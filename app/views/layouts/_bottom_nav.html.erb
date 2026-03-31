@@ -1,14 +1,14 @@
 <div class="fixed bottom-2 left-1/2 -translate-x-1/2 w-[94%] max-w-[540px] z-30 pointer-events-auto">
   
   <%# 土台：120px 固定 %>
-  <div class="w-full h-[120px] flex items-center justify-around px-4 shadow-[0_12px_40px_rgba(0,0,0,0.1)] border-2 border-white"
+  <div class="w-full h-[100px] flex items-center justify-around px-4 shadow-[0_12px_40px_rgba(0,0,0,0.1)] border-2 border-white"
        style="background-color: rgba(255, 255, 255, 0.45); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 4.5rem;">
 
     <%# 1. ホーム %>
     <% is_home = current_page?(root_path) %>
     <%= link_to root_path, class: "flex flex-col items-center justify-center transition-all active:scale-90" do %>
-      <%# 丸：70px 固定 %>
-      <div class="w-[70px] h-[70px] rounded-full flex items-center justify-center shadow-md mb-1.5 <%= is_home ? 'bg-[#65C7A4]' : 'bg-white' %>">
+      <%# 丸：60px 固定 %>
+      <div class="w-[60px] h-[60px] rounded-full flex items-center justify-center shadow-md mb-1.5 <%= is_home ? 'bg-[#65C7A4]' : 'bg-white' %>">
         <%# アイコン %>
         <i class="bi bi-house-door-fill text-[30px] leading-none <%= is_home ? 'text-white' : 'text-[#65C7A4]' %>"></i>
       </div>
@@ -18,7 +18,7 @@
     <%# 2. 神社（キャラクター図鑑へ） %>
     <% is_characters = (controller_name == 'characters') %>
     <%= link_to characters_path, class: "flex flex-col items-center justify-center transition-all active:scale-90" do %>
-      <div class="w-[70px] h-[70px] rounded-full flex items-center justify-center shadow-md mb-1.5 <%= is_characters ? 'bg-[#65C7A4]' : 'bg-white' %>">
+      <div class="w-[60px] h-[60px] rounded-full flex items-center justify-center shadow-md mb-1.5 <%= is_characters ? 'bg-[#65C7A4]' : 'bg-white' %>">
         <i class="fa-solid fa-torii-gate text-[27px] mt-[2px] <%= is_characters ? 'text-white' : 'text-[#65C7A4]' %>"></i>
       </div>
       <span class="text-[12px] font-black tracking-tighter <%= is_characters ? 'text-[#65C7A4]' : 'text-gray-500' %>">神社</span>
@@ -27,7 +27,7 @@
     <%# 3. 記録 %>
     <% is_logs = (controller_name == 'walking_logs') %>
     <%= link_to walking_logs_path, class: "flex flex-col items-center justify-center transition-all active:scale-90" do %>
-      <div class="w-[70px] h-[70px] rounded-full flex items-center justify-center shadow-md mb-1.5 <%= is_logs ? 'bg-[#65C7A4]' : 'bg-white' %>">
+      <div class="w-[60px] h-[60px] rounded-full flex items-center justify-center shadow-md mb-1.5 <%= is_logs ? 'bg-[#65C7A4]' : 'bg-white' %>">
         <i class="bi bi-journal-text text-[28px] leading-none <%= is_logs ? 'text-white' : 'text-[#65C7A4]' %>"></i>
       </div>
       <span class="text-[12px] font-black tracking-tighter <%= is_logs ? 'text-[#65C7A4]' : 'text-gray-500' %>">記録</span>
@@ -36,7 +36,7 @@
     <%# 4. マイページ %>
     <% is_mypage = current_page?(mypage_path) %>
     <%= link_to mypage_path, class: "flex flex-col items-center justify-center transition-all active:scale-90" do %>
-      <div class="w-[70px] h-[70px] rounded-full flex items-center justify-center shadow-md mb-1.5 <%= is_mypage ? 'bg-[#65C7A4]' : 'bg-white' %>">
+      <div class="w-[60px] h-[60px] rounded-full flex items-center justify-center shadow-md mb-1.5 <%= is_mypage ? 'bg-[#65C7A4]' : 'bg-white' %>">
         <i class="bi bi-person-gear text-[30px] leading-none <%= is_mypage ? 'text-white' : 'text-[#65C7A4]' %>"></i>
       </div>
       <span class="text-[12px] font-black tracking-tighter <%= is_mypage ? 'text-[#65C7A4]' : 'text-gray-500' %>">マイページ</span>

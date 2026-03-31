@@ -6,7 +6,7 @@
 <% is_v2 = current_lv >= 10 %>
 
 <%# 進化後だけ位置やサイズを変えるためのクラス設定 %>
-<% koyoi_transform_class = is_v2 ? "w-[300vw] max-w-none -translate-y-20" : "w-[130vw] max-w-[500px]" %>
+<% koyoi_transform_class = is_v2 ? "w-[300vw] max-w-none -translate-y-20" : "w-[100vw] max-w-[500px]" %>
 
 <%# --- 全体の背景を神社の境内グラデーションに適用 --- %>
 <div class="h-screen w-full flex flex-col items-center p-6 pb-24 relative overflow-hidden">
@@ -26,7 +26,7 @@
   </div>
 
   <%# --- 3. お散歩ボタン（前面・位置固定） --- %>
-  <div class="mt-auto w-full max-w-[240px] mb-40 z-20 pointer-events-auto">
+  <div class="mt-auto w-full max-w-[240px] mb-35 z-20 pointer-events-auto">
     <%= link_to new_walking_path, class: "group relative flex items-center justify-center w-full" do %>
       <div class="absolute inset-0 bg-[#F28FA3] rounded-full blur-lg opacity-40 group-active:blur-md transition-all"></div>
       <div class="relative w-full bg-[#F28FA3] text-white text-2xl font-black py-6 rounded-full shadow-lg border-b-8 border-[#B55D6F] flex items-center justify-center gap-2 transition-transform active:translate-y-1 active:border-b-0">
