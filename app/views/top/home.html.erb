@@ -6,10 +6,10 @@
 <% is_v2 = current_lv >= 10 %>
 
 <%# 進化後だけ位置やサイズを変えるためのクラス設定 %>
-<% koyoi_transform_class = is_v2 ? "w-[300vw] max-w-none -translate-y-20" : "w-[100vw] max-w-[500px]" %>
+<% koyoi_transform_class = is_v2 ? "w-[300%] max-w-none -translate-y-20" : "w-screen max-w-[500px]" %>
 
-<%# --- 全体 --- %>
-<div class="h-screen w-full flex flex-col items-center p-6 pb-24 relative overflow-hidden">
+<%# --- 全体：fixed inset-0 と touch-none で物理的に画面をロックする --- %>
+<div class="fixed inset-0 h-screen w-full flex flex-col items-center p-6 pb-24 overflow-hidden touch-none">
   
   <%# --- 1. 左上のステータスエリア --- %>
   <div class="absolute top-0 left-0 z-30 pointer-events-none p-0">
@@ -19,14 +19,16 @@
   </div>
 
   <%# --- 2. メインキャラ（背面・巨大） --- %>
+  <%# 100vw を 100% または w-screen に整理し、はみ出しによるスクロールを抑止 %>
   <div class="absolute top-[20%] left-1/2 -translate-x-1/2 <%= koyoi_transform_class %> h-auto z-0 pointer-events-none flex justify-center transition-all duration-500">
-    <div class="relative w-full h-full">
+    <div class="relative w-full h-full flex justify-center">
       <%= image_tag current_user.current_koyoi_image, class: "w-full h-auto object-contain filter drop-shadow-xl" %>
     </div>
   </div>
 
   <%# --- 3. お散歩ボタン（前面・位置固定） --- %>
-  <div class="mt-auto w-full max-w-[240px] mb-50 z-20 pointer-events-auto">
+  <%# mt-auto で下寄せにし、絶対位置ではなく Flexbox の中で位置を確定させる %>
+  <div class="mt-auto w-full max-w-[240px] mb-12 z-20 pointer-events-auto">
     <%= link_to new_walking_path, class: "group relative flex items-center justify-center w-full" do %>
       <div class="absolute inset-0 bg-[#F28FA3] rounded-full blur-lg opacity-40 group-active:blur-md transition-all"></div>
       <div class="relative w-full bg-[#F28FA3] text-white text-2xl font-black py-6 rounded-full shadow-lg border-b-8 border-[#B55D6F] flex items-center justify-center gap-2 transition-transform active:translate-y-1 active:border-b-0">
@@ -35,4 +37,6 @@
     <% end %>
   </div>
 
+  <%# 常に空で待機し、ボタンが押された時だけ中身が流し込まれる %>
+  <%= turbo_frame_tag "modal", target: "_top" %>
 </div>

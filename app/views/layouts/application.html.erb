@@ -18,11 +18,11 @@
   </head>
 
   <body style="margin: 0; padding: 0; overflow: hidden; height: 100%; width: 100%; position: fixed; touch-action: none;
-               background-image: url('<%= asset_path('asanoha.png') %>'), linear-gradient(to bottom, #F5F5F0 0%, #F5F5F0 35%, #A4D5BD 100%);
-               background-size: 650px, 100% 100%;
-               background-repeat: repeat, no-repeat;
-               background-position: center, center;
-               background-attachment: fixed;">
+             background-image: url('<%= asset_path('asanoha.png') %>'), linear-gradient(to bottom, #F5F5F0 0%, #F5F5F0 35%, #A4D5BD 100%);
+             background-size: 650px, cover; 
+             background-repeat: repeat, no-repeat;
+             background-position: center, center;
+             background-attachment: fixed;">
 
     <%# --- ヘッダー --- %>
     <% unless content_for?(:no_nav) %>
