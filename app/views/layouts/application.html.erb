@@ -1,30 +1,33 @@
 <!DOCTYPE html>
-<html lang="ja" style="height: 100%; margin: 0; padding: 0; overflow: hidden; position: fixed; width: 100%;">
+<html lang="ja" style="height: 100%; margin: 0; padding: 0; overflow: hidden;">
   <head>
     <title>ManimaniSanpo</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <%= csp_meta_tag %>
 
-    <%# --- Leaflet --- %>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
     <script src="https://unpkg.com/@hotwired/turbo@7.3.0/dist/turbo.es2017-umd.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   </head>
 
-  <%# --- 修正: asset_pathをシングルクォートに変更し、z-indexと背景指定を確実に --- %>
-  <body style="margin: 0; padding: 0; overflow: hidden; height: 100%; width: 100%; position: fixed; touch-action: none;
-               background-image: url('<%= asset_path('asanoha.png') %>'), linear-gradient(to bottom, #F5F5F0 0%, #F5F5F0 35%, #A4D5BD 100%);
-               background-size: 650px auto, 100% 100%;
-               background-repeat: repeat, no-repeat;
-               background-position: center top;
-               background-attachment: fixed;
-               background-color: #F5F5F0;">
+  <%# --- body 自体にグラデを塗ることで「隙間」を完全に殺す --- %>
+  <body style="margin: 0; padding: 0; overflow: hidden; width: 100%; height: 100%; position: fixed; touch-action: none;
+               background: linear-gradient(to bottom, #F5F5F0 0%, #F5F5F0 35%, #A4D5BD 100%) no-repeat;
+               background-size: 100% 100%;">
+
+    <%# --- 麻の葉レイヤー：以前の「薄さ」を再現するために opacity を 0.08 に設定 --- %>
+    <%# position: fixed で top: -50px にすることで、iPhoneのバーの隙間も埋めます %>
+    <div style="position: fixed; top: -50px; left: 0; width: 100vw; height: calc(100vh + 100px); z-index: 0; pointer-events: none;
+                background-image: url('<%= asset_path('asanoha.png') %>');
+                background-size: 650px auto;
+                background-repeat: repeat;
+                opacity: 0.08;
+                image-rendering: -webkit-optimize-contrast;">
+    </div>
 
     <%# --- ヘッダー --- %>
     <% unless content_for?(:no_nav) %>
@@ -52,27 +55,5 @@
     <% end %>
 
     <%= turbo_frame_tag "modal" %>
-
-    <%# --- SweetAlert2 略 --- %>
-    <% if flash[:sent_modal] %>
-      <script>
-        const showSentModal = () => {
-          Swal.fire({
-            title: 'メールを送信しました！',
-            html: 'パスワード再設定用のメールを送信しました。',
-            icon: 'success',
-            confirmButtonText: 'OK',
-            buttonsStyling: false,
-            didOpen: () => {
-              const btn = Swal.getConfirmButton();
-              btn.style.cssText = "background-color:#65C7A4; color:#fff; border-radius:9999px; padding:12px 60px; font-weight:bold; border:none;";
-            }
-          });
-          document.removeEventListener("turbo:load", showSentModal);
-        };
-        document.addEventListener("turbo:load", showSentModal);
-      </script>
-      <% flash.delete(:sent_modal) %>
-    <% end %>
   </body>
 </html>

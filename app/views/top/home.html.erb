@@ -1,79 +1,42 @@
-<!DOCTYPE html>
-<html lang="ja" style="height: 100%; margin: 0; padding: 0; overflow: hidden;">
-  <head>
-    <title>ManimaniSanpo</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <%= csp_meta_tag %>
+<%# 今連れているキャラクターのデータを取得 %>
+<% active_char = current_user.user_characters.first %>
+<% current_lv = active_char&.level || 1 %>
 
-    <%# --- Leaflet --- %>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<%# 進化後（Lv.10以上）かどうかの判定 %>
+<% is_v2 = current_lv >= 10 %>
 
-    <script src="https://unpkg.com/@hotwired/turbo@7.3.0/dist/turbo.es2017-umd.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  </head>
+<%# 進化後だけ位置やサイズを変えるためのクラス設定 %>
+<% koyoi_transform_class = is_v2 ? "w-[300%] max-w-none -translate-y-20" : "w-screen max-w-[500px]" %>
 
-  <body style="margin: 0; padding: 0; overflow: hidden; height: 100%; width: 100%; position: fixed; touch-action: none; background-color: #F5F5F0;">
-
-    <%# --- 【重要】背景と模様を一体化させた固定レイヤー --- %>
-    <div style="position: fixed; top: -50px; left: 0; width: 100vw; height: calc(100vh + 100px); z-index: -1; pointer-events: none;
-                background-image: url('<%= asset_path('asanoha.png') %>'), linear-gradient(to bottom, #F5F5F0 0%, #F5F5F0 35%, #A4D5BD 100%);
-                background-size: 650px auto, 100% 100%;
-                background-repeat: repeat, no-repeat;
-                background-attachment: scroll;">
+<%# --- 全体：fixed inset-0 と touch-none で物理的に画面をロックする --- %>
+<div class="fixed inset-0 h-screen w-full flex flex-col items-center p-6 pb-24 overflow-hidden touch-none">
+  
+  <%# --- 1. 左上のステータスエリア --- %>
+  <div class="absolute top-0 left-0 z-30 pointer-events-none p-0">
+    <div class="pointer-events-auto">
+      <%= render 'layouts/header' %>
     </div>
+  </div>
 
-    <%# --- ヘッダー --- %>
-    <% unless content_for?(:no_nav) %>
-      <% unless user_signed_in? %>
-        <header class="fixed top-0 left-0 w-full flex justify-between items-center p-6 z-50 bg-transparent">
-          <%= link_to root_path, class: "transition-transform hover:scale-105 active:scale-95" do %> 
-            <div class="bg-white rounded-full w-12 h-12 flex items-center justify-center shadow-md overflow-hidden">
-              <%= image_tag "logomark.png", class: "w-full h-full object-contain" %>
-            </div>
-          <% end %>
-          <%= link_to "ログイン", new_user_session_path, 
-              class: "px-6 py-2.5 text-white font-bold text-lg rounded-full shadow-md inline-block text-center",
-              style: "background-color: #65C7A4;" %>
-        </header>
-      <% end %>
+  <%# --- 2. メインキャラ（背面・巨大） --- %>
+  <%# 100vw を 100% または w-screen に整理し、はみ出しによるスクロールを抑止 %>
+  <div class="absolute top-[20%] left-1/2 -translate-x-1/2 <%= koyoi_transform_class %> h-auto z-0 pointer-events-none flex justify-center transition-all duration-500">
+    <div class="relative w-full h-full flex justify-center">
+      <%= image_tag current_user.current_koyoi_image, class: "w-full h-auto object-contain filter drop-shadow-xl" %>
+    </div>
+  </div>
+
+  <%# --- 3. お散歩ボタン（前面・位置固定） --- %>
+  <%# mt-auto で下寄せにし、絶対位置ではなく Flexbox の中で位置を確定させる %>
+  <div class="mt-auto w-full max-w-[240px] mb-18 z-20 pointer-events-auto">
+    <%= link_to new_walking_path, class: "group relative flex items-center justify-center w-full" do %>
+      <div class="absolute inset-0 bg-[#F28FA3] rounded-full blur-lg opacity-40 group-active:blur-md transition-all"></div>
+      <div class="relative w-full bg-[#F28FA3] text-white text-2xl font-black py-6 rounded-full shadow-lg border-b-8 border-[#B55D6F] flex items-center justify-center gap-2 transition-transform active:translate-y-1 active:border-b-0">
+        <span>お散歩する</span>
+      </div>
     <% end %>
+  </div>
 
-    <%# メインコンテンツ %>
-    <main style="position: relative; z-index: 1; height: 100%; width: 100%;">
-      <%= yield %>
-    </main>
-
-    <% if user_signed_in? && !content_for?(:no_nav) %>
-      <%= render 'layouts/bottom_nav' %>
-    <% end %>
-
-    <%= turbo_frame_tag "modal" %>
-    
-    <%# --- SweetAlert2 略 --- %>
-    <% if flash[:sent_modal] %>
-      <script>
-        const showSentModal = () => {
-          Swal.fire({
-            title: 'メールを送信しました！',
-            html: 'パスワード再設定用のメールを送信しました。',
-            icon: 'success',
-            confirmButtonText: 'OK',
-            buttonsStyling: false,
-            didOpen: () => {
-              const btn = Swal.getConfirmButton();
-              btn.style.cssText = "background-color:#65C7A4; color:#fff; border-radius:9999px; padding:12px 60px; font-weight:bold; border:none;";
-            }
-          });
-          document.removeEventListener("turbo:load", showSentModal);
-        };
-        document.addEventListener("turbo:load", showSentModal);
-      </script>
-      <% flash.delete(:sent_modal) %>
-    <% end %>
-  </body>
-</html>
+  <%# 常に空で待機し、ボタンが押された時だけ中身が流し込まれる %>
+  <%= turbo_frame_tag "modal", target: "_top" %>
+</div>
