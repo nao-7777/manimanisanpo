@@ -1,4 +1,3 @@
-User.destroy_all
 Mission.destroy_all
 
 photo_missions = [
