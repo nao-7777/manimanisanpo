@@ -29,15 +29,15 @@ Rails.application.configure do
   config.action_mailer.perform_deliveries = true
   
   # エラー内容をログにしっかり出すために true にします
-  config.action_mailer.raise_delivery_errors = true
+  config.action_mailer.raise_delivery_errors = false
 
   config.action_mailer.smtp_settings = {
-    address:              'smtp.resend.com',
-    port:                 465,
-    user_name:            'resend',
-    password:             ENV['RESEND_API_KEY'],
+    address:              'smtp.gmail.com',
+    port:                 587,
+    domain:               'gmail.com',
+    user_name:            'manimanisanpo@gmail.com', # 新しいメアド
+    password:             ENV['GMAIL_PASSWORD'],
     authentication:       'plain',
-    tls:                  true,
-    enable_starttls_auto: false
+    enable_starttls_auto: true
   }
 end
