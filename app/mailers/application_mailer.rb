@@ -1,4 +1,4 @@
 class ApplicationMailer < ActionMailer::Base
-  default from: 'onboarding@resend.dev'
+  default from: 'まにまに散歩 <manimanisanpo@gmail.com>'
   layout 'mailer'
 end
