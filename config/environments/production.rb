@@ -23,9 +23,21 @@ Rails.application.configure do
 
   config.active_record.dump_schema_after_migration = false
 
-  # メール設定（ここが重要！）
+  # --- メール設定（修正版） ---
   config.action_mailer.default_url_options = { host: 'manimanisanpo.onrender.com', protocol: 'https' }
-  config.action_mailer.delivery_method = :test # 送信エラーを回避
+  config.action_mailer.delivery_method = :smtp
   config.action_mailer.perform_deliveries = true
-  config.action_mailer.raise_delivery_errors = true
+  
+  # 送信エラーが起きてもサーバーを落とさない（status 1 対策）
+  config.action_mailer.raise_delivery_errors = false
+
+  config.action_mailer.smtp_settings = {
+    address:              'smtp.gmail.com',
+    port:                 587,
+    domain:               'gmail.com',
+    user_name:            ENV['GMAIL_CH_USER'],
+    password:             ENV['GMAIL_CH_PASSWORD'],
+    authentication:       'plain',
+    enable_starttls_auto: true
+  }
 end
