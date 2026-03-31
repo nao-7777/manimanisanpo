@@ -17,12 +17,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   </head>
 
+  <%# --- 修正: asset_pathをシングルクォートに変更し、z-indexと背景指定を確実に --- %>
   <body style="margin: 0; padding: 0; overflow: hidden; height: 100%; width: 100%; position: fixed; touch-action: none;
-             background-image: url('<%= asset_path('asanoha.png') %>'), linear-gradient(to bottom, #F5F5F0 0%, #F5F5F0 35%, #A4D5BD 100%);
-             background-size: 650px, cover; 
-             background-repeat: repeat, no-repeat;
-             background-position: center, center;
-             background-attachment: fixed;">
+               background-image: url('<%= asset_path('asanoha.png') %>'), linear-gradient(to bottom, #F5F5F0 0%, #F5F5F0 35%, #A4D5BD 100%);
+               background-size: 650px auto, 100% 100%;
+               background-repeat: repeat, no-repeat;
+               background-position: center top;
+               background-attachment: fixed;
+               background-color: #F5F5F0;">
 
     <%# --- ヘッダー --- %>
     <% unless content_for?(:no_nav) %>
