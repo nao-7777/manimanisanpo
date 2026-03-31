@@ -17,4 +17,4 @@ RUN chmod +x /usr/bin/entrypoint.sh
 ENTRYPOINT ["entrypoint.sh"]
 EXPOSE 3000
 
-CMD ["sh", "-c", "bundle exec rails db:migrate:reset db:seed && bundle exec rails s -b 0.0.0.0"]
+CMD ["sh", "-c", "bundle exec rails db:migrate && bundle exec rails db:seed && bundle exec rails s -b 0.0.0.0"]
