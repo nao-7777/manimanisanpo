@@ -56,7 +56,7 @@ if user
   kinyo = Character.find_by(name: "金宵 (こよい)")
   UserCharacter.create!(
     user: user, 
-    character: kinyo, 
+    character: koyoi, 
     evolved: false
   )
 end
