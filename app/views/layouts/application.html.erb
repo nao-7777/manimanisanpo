@@ -17,25 +17,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   </head>
 
-  <body style="height: 100%; margin: 0; padding: 0; overflow-x: hidden; position: relative; background-color: #A4D5BD; display: flex; flex-direction: column;">
-    <%# 背景レイヤー %>
-    <div style="position: fixed; inset: 0; z-index: -2; pointer-events: none;
-                background: radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.5), transparent 30%),
-                            linear-gradient(to bottom, #F5F5F0 0%, #F5F5F0 35%, #A4D5BD 100%);">
-    </div>
-    
-    <%# 麻の葉模様レイヤー %>
-    <div style="position: fixed; inset: 0; z-index: -1; pointer-events: none;
-                background-image: url('<%= asset_path('asanoha.png') %>');
-                background-size: 650px;
-                background-repeat: repeat;
-                background-position: left top;
-                opacity: 0.12;
-                mix-blend-mode: multiply;
-                image-rendering: -webkit-optimize-contrast;
-                transform: translateZ(0);">
-    </div>
-        
+  <body style="margin: 0; padding: 0; overflow-x: hidden; min-height: 100vh; position: relative;
+               background-image: url('<%= asset_path('asanoha.png') %>'), linear-gradient(to bottom, #F5F5F0 0%, #F5F5F0 35%, #A4D5BD 100%);
+               background-size: 650px, auto;
+               background-repeat: repeat, no-repeat;
+               background-attachment: fixed;
+               background-blend-mode: multiply;">
+
     <%# --- ヘッダー --- %>
     <% unless content_for?(:no_nav) %>
       <% unless user_signed_in? %>
@@ -52,6 +40,7 @@
       <% end %>
     <% end %>
 
+    <%# メインコンテンツ %>
     <main style="position: relative; z-index: 1;">
       <%= yield %>
     </main>
