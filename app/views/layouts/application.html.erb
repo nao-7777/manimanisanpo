@@ -2,8 +2,7 @@
 <html lang="ja" style="height: 100%; margin: 0; padding: 0; overflow-x: hidden;">
   <head>
     <title>ManimaniSanpo</title>
-    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-    <%= csrf_meta_tags %>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <%= csp_meta_tag %>
 
     <%# --- Leaflet --- %>
@@ -20,16 +19,15 @@
 
   <body style="min-height: 100%; margin: 0; padding: 0; overflow-x: hidden; position: relative;">
 
-    <%# 背景レイヤー：width/heightを消し、top/left/right/bottomを「-1px」にして少しだけ外側まで広げます %>
-    <div style="position: fixed; top: -1px; left: -1px; right: -1px; bottom: -1px; z-index: -2; pointer-events: none;
+    <%# 背景レイヤー %>
+    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: -2; pointer-events: none;
                 background: radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.5), transparent 30%),
                             linear-gradient(to bottom, #F5F5F0 0%, #F5F5F0 35%, #A4D5BD 100%);
-                background-attachment: fixed;
-                background-color: #A4D5BD;">
+                background-attachment: fixed;">
     </div>
-
-    <%# 麻の葉模様レイヤー：こちらも同様に四方を -1px で固定。これで隙間を物理的にゼロにします %>
-    <div style="position: fixed; top: -1px; left: -1px; right: -1px; bottom: -1px; z-index: -1; pointer-events: none;
+    
+    <%# 麻の葉模様レイヤー %>
+    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: -1; pointer-events: none;
                 background-image: url('<%= asset_path('asanoha.png') %>');
                 background-size: 650px;
                 background-repeat: repeat;
@@ -39,7 +37,7 @@
                 image-rendering: -webkit-optimize-contrast;
                 transform: translateZ(0);">
     </div>
-    
+        
     <%# --- ヘッダー --- %>
     <% unless content_for?(:no_nav) %>
       <% unless user_signed_in? %>
