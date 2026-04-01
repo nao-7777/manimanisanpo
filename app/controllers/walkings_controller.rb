@@ -13,14 +13,14 @@ class WalkingsController < ApplicationController
   def new
     @walk = current_user.walks.where(end_at: nil).order(created_at: :desc).first_or_create(start_at: Time.current, steps: 0, duration: 0)
     
-    # 💡 修正：今回の散歩でまだクリアしていないIDから抽選
+    # 今回の散歩でまだクリアしていないIDから抽選
     @current_mission = Mission.where.not(id: @walk.mission_ids).order("RANDOM()").first
     @captured_missions = @walk.missions.with_attached_image
   end
 
   def random_mission
     walk = current_user.walks.find_by(end_at: nil)
-    # 💡 修正：今回の散歩でまだクリアしていないIDから抽選
+    # 今回の散歩でまだクリアしていないIDから抽選
     @mission = Mission.where.not(id: walk&.mission_ids || []).order("RANDOM()").first
     
     render json: { id: @mission&.id || 0, title: @mission&.title || "全てクリア！" }
@@ -68,7 +68,7 @@ class WalkingsController < ApplicationController
       mission.update(walk_id: @walk.id) if mission
     end
 
-    # 💡 修正：次のお題も今回の散歩で未クリアなものから選ぶ
+    # 次のお題も今回の散歩で未クリアなものから選ぶ
     next_mission = Mission.where.not(id: @walk.mission_ids).order("RANDOM()").first
   
     render json: { 
@@ -89,7 +89,7 @@ class WalkingsController < ApplicationController
       mission.update(walk_id: @walk.id)
     end
 
-    # 💡 修正：次のお題
+    # 次のお題
     next_mission = Mission.where.not(id: @walk.mission_ids).order("RANDOM()").first
     
     render json: { 
