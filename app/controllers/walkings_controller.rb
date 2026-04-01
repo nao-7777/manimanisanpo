@@ -64,7 +64,7 @@ class WalkingsController < ApplicationController
   
     if params[:mission_id].to_i > 0
       mission = Mission.find_by(id: params[:mission_id])
-      # ここでwalk_idが更新されます
+      # ここでwalk_idが更新
       mission.update(walk_id: @walk.id) if mission
     end
 

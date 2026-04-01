@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="ja" style="height: 100dvh; margin: 0; padding: 0; background-color: #F5F5F0;">
+<html lang="ja" style="height: 100%; margin: 0; padding: 0; background: linear-gradient(to bottom, #F5F5F0 0%, #F5F5F0 35%, #A4D5BD 100%) no-repeat fixed;">
   <head>
     <title>ManimaniSanpo</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=0">
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -14,24 +14,48 @@
     <%# 外部ライブラリ %>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <%# TurboはRails標準のものと競合しないよう注意 %>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    
+    <style>
+      /* 画面を固定してスクロールさせない設定 */
+      html, body {
+        height: 100%;
+        width: 100%;
+        overflow: hidden; /* 全体的なスクロールを禁止 */
+        position: fixed; /* iOSでのバウンススクロールを防止 */
+      }
+      body {
+        margin: 0;
+        padding: 0;
+        background: transparent !important;
+        display: flex;
+        flex-direction: column;
+      }
+      main {
+        flex: 1;
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        /* コンテンツが溢れた時だけ、中身をスクロール可能にする（散歩記録用） */
+        overflow-y: auto; 
+        -webkit-overflow-scrolling: touch;
+      }
+    </style>
   </head>
 
-  <body style="margin: 0; padding: 0; width: 100%; height: 100dvh; overflow: hidden; touch-action: none; background: transparent;">
+  <body>
 
-    <%# --- 背景レイヤー --- %>
-    <div style="position: fixed; top: -100px; left: 0; width: 100vw; height: calc(100dvh + 200px); z-index: -2; background: linear-gradient(to bottom, #F5F5F0 0%, #F5F5F0 35%, #A4D5BD 100%) no-repeat;"></div>
-    <div style="position: fixed; top: -100px; left: 0; width: 100vw; height: calc(100dvh + 200px); z-index: -1; pointer-events: none; background-image: url('<%= asset_path('asanoha.png') %>'); background-size: 650px auto; opacity: 0.4;"></div>
+    <%# --- 麻の葉模様レイヤー（最背面） --- %>
+    <div style="position: fixed; inset: 0; z-index: -1; pointer-events: none; background-image: url('<%= asset_path('asanoha.png') %>'); background-size: 650px auto; opacity: 0.4;"></div>
 
     <%# --- ログイン前のみ表示する共通ヘッダー --- %>
     <% unless user_signed_in? || content_for?(:no_nav) %>
-      <header class="fixed top-0 left-0 w-full flex justify-between items-center p-6 z-50 bg-transparent">
+      <header class="fixed top-0 left-0 w-full flex justify-between items-center p-6 z-50 bg-transparent" style="padding-top: calc(env(safe-area-inset-top) + 1.5rem);">
         <%= link_to root_path, class: "transition-transform hover:scale-105 active:scale-95" do %> 
           <div class="bg-white rounded-full w-12 h-12 flex items-center justify-center shadow-md overflow-hidden">
             <%= image_tag "logomark.png", class: "w-full h-full object-contain" %>
@@ -41,13 +65,17 @@
       </header>
     <% end %>
 
-    <%# メインコンテンツ：お散歩画面のヘッダーは yield 側（本体）で描写される %>
-    <main style="position: relative; z-index: 1; height: 100%; width: 100%;">
+    <%# メインコンテンツ %>
+    <main>
       <%= yield %>
     </main>
 
+    <%# ボトムナビゲーション %>
     <% if user_signed_in? && !content_for?(:no_nav) %>
-      <%= render 'layouts/bottom_nav' %>
+      <%# padding-bottom を内側に入れ、ナビが画面底に吸着するように修正 %>
+      <footer style="z-index: 50; padding-bottom: env(safe-area-inset-bottom); background: transparent;">
+        <%= render 'layouts/bottom_nav' %>
+      </footer>
     <% end %>
 
     <%= turbo_frame_tag "modal" %>
