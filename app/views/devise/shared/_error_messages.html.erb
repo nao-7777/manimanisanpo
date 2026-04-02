@@ -1,16 +1,11 @@
-<% flash.each do |key, value| %>
-  <% next if key == "sent_modal" %>
-  
-  <%# 1. h-0 で場所を取らないようにしつつ、overflow-visible で中身を見せる %>
-  <div class="relative h-0 overflow-visible z-50 flash-container">
-    
-    <%# 2. top-8 にすることで、タイトルの少し下にフワッと浮かせます %>
-    <%# shadow-md を付けて、背景と区別しやすくしたよ %>
-    <div class="absolute top-8 left-0 right-0 p-2.5 text-[11px] font-bold text-center rounded-2xl shadow-md border transition-all duration-700 flash-content
-      <%= key == 'notice' ? 'bg-blue-50 text-blue-600 border-blue-100' : 'bg-red-50 text-red-600 border-red-100' %>">
-      <%= value %>
+<% if resource.errors.any? %>
+  <% resource.errors.full_messages.each do |message| %>
+    <div class="relative h-0 overflow-visible z-50 flash-container">
+      <div class="absolute top-8 left-0 right-0 p-2.5 text-[11px] font-bold text-center rounded-2xl shadow-md border transition-all duration-700 flash-content bg-red-50 text-red-600 border-red-100">
+        <%= message %>
+      </div>
     </div>
-  </div>
+  <% end %>
 <% end %>
 
 <script>

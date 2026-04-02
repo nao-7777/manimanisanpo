@@ -23,6 +23,13 @@ ja:
       signed_in: "ログインしました。"
       signed_out: "ログアウトしました。"
       already_signed_out: "ログアウトしました。"
+    registrations:
+      signed_up: "アカウント登録が完了しました。"
+      updated: "アカウント情報を変更しました。"
+      destroyed: "アカウントを削除しました。"
+      signed_up_but_unconfirmed: "確認メールを送信しました。メール内のリンクから登録を完了してください。"
+      signed_up_but_inactive: "アカウントは作成されましたが、有効化されていないためログインできません。"
+      signed_up_but_locked: "アカウントは作成されましたが、ロックされているためログインできません。"
     mailer:
       confirmation_instructions:
         subject: "【まにまに散歩】メールアドレスの確認をお願いします"
@@ -34,3 +41,21 @@ ja:
         subject: "【まにまに散歩】メールアドレスが変更されました"
       password_change:
         subject: "【まにまに散歩】パスワードが変更されました"
+
+  # モデル名の日本語化
+  activerecord:
+    attributes:
+      user:
+        email: "メールアドレス"
+        password: "パスワード"
+        password_confirmation: "確認用パスワード"
+    errors:
+      models:
+        user:
+          attributes:
+            email:
+              taken: "は既に登録されています"
+            password:
+              too_short: "は%{count}文字以上で入力してください"
+            password_confirmation:
+              confirmation: "がパスワードと一致しません"
