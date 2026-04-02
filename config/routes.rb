@@ -27,9 +27,9 @@ Rails.application.routes.draw do
 
   # 5. お散歩・アルバム関連
   resources :walkings, only: [:index, :new, :create, :show, :update] do
-    # 💡 collectionを先に書く（ID判定より先にチェックさせる）
     collection do
       get :random_mission
+      get :evolve
     end
 
     member do
@@ -47,5 +47,10 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :characters, only: [:index, :show]
+  # 6. キャラクター関連
+  resources :characters, only: [:index, :show] do
+    member do
+      post :confirm_evolution
+    end
+  end
 end

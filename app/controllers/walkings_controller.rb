@@ -111,6 +111,10 @@ class WalkingsController < ApplicationController
     end
   end
 
+  def evolve
+    @user_char = current_user.user_characters.first
+  end
+
   private
   def walking_params; params.permit(:steps, :duration); end
 end

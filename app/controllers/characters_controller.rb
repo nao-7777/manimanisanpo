@@ -14,4 +14,11 @@ class CharactersController < ApplicationController
     # まだ持っていないキャラの詳細を見ようとしたら一覧に戻す（ガード処理）
     redirect_to characters_path, alert: "まだ出会っていないキャラクターです" unless @user_character
   end
+
+  def confirm_evolution
+    @user_char = current_user.user_characters.find(params[:id])
+    @user_char.update!(evolved: true)
+    
+    redirect_to root_path
+  end
 end

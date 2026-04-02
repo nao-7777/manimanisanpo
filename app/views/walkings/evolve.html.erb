@@ -1,0 +1,115 @@
+<% content_for :no_nav, true %>
+
+<div id="evo-container" class="fixed inset-0 bg-[#0D051A] z-[9999] overflow-hidden">
+  
+  <% # --- キャラクター層 --- %>
+  <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+    <%# 背景の光 %>
+    <div id="light-ring" class="absolute w-[400px] h-[400px] bg-[#FFD700] rounded-full blur-[120px] opacity-0"></div>
+
+    <% # 進化前キャラ %>
+    <%= image_tag "characters/koyoi_v1.png", id: "char-v1", 
+        class: "relative z-10 w-80 h-auto transition-all duration-1000 transform scale-100 -translate-y-5" %>
+
+    <% # 進化後キャラ %>
+    <%= image_tag "characters/koyoi_v2.png", id: "char-v2", 
+        style: "transform: translate(-50%, -50%) translateY(350px) scale(1.1);",
+        class: "absolute top-1/2 left-1/2 z-20 w-[600px] max-w-none h-auto opacity-0 blur-md" %>
+  </div>
+
+  <% # --- コンテンツ層 (画面最下部固定) --- %>
+  <div class="absolute bottom-10 left-1/2 -translate-x-1/2 w-full max-w-md flex flex-col items-center gap-4 px-6 z-[60]">
+    <div id="message-card" class="w-full bg-white/10 backdrop-blur-xl border border-white/20 p-5 rounded-2xl shadow-2xl opacity-0 transition-all duration-1000 transform translate-y-4 pointer-events-none">
+      <p class="text-white text-lg font-bold leading-relaxed text-center tracking-wider">
+        ようやく力を取り戻せたぞ。<br>主のおかげだ。これからもよろしく頼む。
+      </p>
+    </div>
+
+    <div id="btn-container" class="opacity-0 transition-all duration-700 pointer-events-none">
+      <%= button_to "新しき姿へ", confirm_evolution_character_path(@user_char.character), method: :post, id: "finish-btn", 
+          class: "px-16 py-4 bg-[#FFD700] text-[#0D051A] font-black rounded-full shadow-[0_0_30px_rgba(255,215,0,0.4)] active:scale-95 transition-transform" %>
+    </div>
+  </div>
+</div>
+
+<style>
+  .ring-active {
+    animation: aura-fade-in 3000ms ease-out forwards;
+  }
+  @keyframes aura-fade-in {
+    0% { opacity: 0; transform: scale(0.8); }
+    100% { opacity: 0.4; transform: scale(1.1); }
+  }
+
+  .v2-active {
+    animation: v2-fade-in 2000ms ease-out forwards;
+  }
+  @keyframes v2-fade-in {
+    0% { opacity: 0; filter: blur(12px); transform: translate(-50%, -50%) translateY(350px) scale(1.1); }
+    100% { opacity: 1; filter: blur(0px); transform: translate(-50%, -50%) translateY(350px) scale(1.1); }
+  }
+
+  .sparkle {
+    position: absolute;
+    pointer-events: none;
+    z-index: 100;
+    background: #FFF9C4;
+    box-shadow: 0 0 10px #FFD700;
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    will-change: transform, opacity;
+    animation: rise-up 2.5s linear forwards;
+  }
+  @keyframes rise-up {
+    0% { transform: translate3d(-50%, 0, 0) scale(0); opacity: 0; }
+    10% { opacity: 1; transform: translate3d(-50%, -20px, 0) scale(1); }
+    100% { transform: translate3d(calc(-50% + var(--tx)), -600px, 0) scale(0) rotate(180deg); opacity: 0; }
+  }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const v1 = document.getElementById('char-v1');
+  const v2 = document.getElementById('char-v2');
+  const ring = document.getElementById('light-ring');
+  const container = document.getElementById('evo-container');
+  const card = document.getElementById('message-card');
+  const btnContainer = document.getElementById('btn-container');
+
+  setTimeout(() => {
+    ring.classList.add('ring-active');
+    
+    const interval = setInterval(() => {
+      const s = document.createElement('div');
+      s.className = 'sparkle';
+      const randomX = container.offsetWidth * (0.05 + Math.random() * 0.9);
+      const startY = container.offsetHeight * 0.8; // 発生位置を下側に固定
+      s.style.setProperty('--tx', `${(Math.random() - 0.5) * 200}px`);
+      s.style.left = `${randomX}px`; 
+      s.style.top = `${startY}px`; 
+      const size = Math.random() * 6 + 3;
+      s.style.width = size + 'px';
+      s.style.height = size + 'px';
+      container.appendChild(s);
+      setTimeout(() => s.remove(), 2500);
+    }, 40);
+
+    setTimeout(() => {
+      clearInterval(interval);
+      v1.style.opacity = '0';
+ 
+      
+      v2.classList.add('v2-active');
+      
+      setTimeout(() => {
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+
+        setTimeout(() => {
+          btnContainer.style.opacity = '1';
+          btnContainer.style.pointerEvents = 'auto';
+        }, 1000);
+      }, 1500);
+    }, 3000);
+  }, 200);
+});
+</script>

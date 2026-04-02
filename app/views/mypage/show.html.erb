@@ -1,16 +1,10 @@
-<%# 
-  解決策：
-  min-h-screen (100vh) を指定することで、コンテンツの量に関わらず
-  この要素が画面の一番底まで到達します。
-  これにより、PWAでナビの下に白い隙間が出るのを物理的に防ぎます。
-%>
 <div class="relative w-full flex flex-col items-center touch-none min-h-screen" style="padding-bottom: 120px;">
 
-  <%# プロフィールカード本体：120pxのマージンは「絶対に変えません」 %>
+  <%# プロフィールカード本体 %>
   <div class="w-full max-w-xs z-10" style="margin-top: 120px;">
     <%= render "profile_card", user: @user %>
   </div>
 
-  <%# モダル枠 %>
+  <%# モーダル枠 %>
   <%= turbo_frame_tag "modal", target: "_top" %>
 </div>
