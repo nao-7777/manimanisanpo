@@ -32,7 +32,7 @@ class WalkingsController < ApplicationController
     
     @mission_count = @walk.missions.count
     @mission_exp = @mission_count * 50
-    @steps_exp = (@walk.steps / 100) * 10
+    @steps_exp = 0 # 歩数ボーナスは一旦廃止
     @time_exp = (@walk.duration / 60) * 5
     @total_exp = @mission_exp + @steps_exp + @time_exp
 
@@ -49,7 +49,7 @@ class WalkingsController < ApplicationController
     duration_sec = params[:duration].to_i
     
     mission_count = @walk.missions.count
-    total_exp = (mission_count * 50) + ((steps / 100) * 10) + ((duration_sec / 60) * 5)
+    total_exp = (mission_count * 50) + ((duration_sec / 60) * 5)
 
     if @walk.update(steps: steps, duration: duration_sec, end_at: Time.current)
       @user_char.gain_exp(total_exp) if @user_char

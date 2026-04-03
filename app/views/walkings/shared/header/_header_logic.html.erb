@@ -1,11 +1,13 @@
 <script>
   (function() {
     const initializeWalkHeader = () => {
-      // 起動時にボタンや表示要素があるか確認し、なければ待つ（読み込み順エラー回避）
+      // 起動時にボタンや表示要素があるか確認
       const timerEl = document.getElementById('display-timer');
-      const stepsEl = document.getElementById('display-steps');
+      const stepsEl = document.getElementById('display-steps'); // HTMLで消していてもOK
       const stopBtn = document.getElementById('btn-finish-walking-trigger');
-      if (!timerEl || !stepsEl || !stopBtn) {
+
+      // stepsElがなくても、timerElとstopBtnさえあれば動くように判定を変更
+      if (!timerEl || !stopBtn) {
         setTimeout(initializeWalkHeader, 100);
         return;
       }
@@ -21,7 +23,9 @@
       window.steps = currentSteps;
 
       function reflectDisplay() {
+        // stepsEl が存在する場合のみ数値を書き込む（存在しなければ何もしない）
         if (stepsEl) stepsEl.innerText = currentSteps.toLocaleString();
+        
         if (timerEl) {
           const mins = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
           const secs = (totalSeconds % 60).toString().padStart(2, '0');
@@ -45,7 +49,7 @@
       }
       const timerInterval = setInterval(tick, 1000);
 
-      // --- センサー系 ---
+      // --- センサー系（ロジックは一切変えていません） ---
       const ACCEL_THRESHOLD = 12; 
       let lastAccel = 0;
       let isWalking = false;
@@ -118,7 +122,6 @@
     };
 
     document.addEventListener('turbo:load', initializeWalkHeader);
-    // 直接実行も試みる（リトライロジックで安全に実行される）
     initializeWalkHeader();
   })();
 </script>
