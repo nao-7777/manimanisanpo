@@ -1,13 +1,18 @@
 class WalkingsController < ApplicationController
   include Rails.application.routes.url_helpers
 
-  skip_before_action :verify_authenticity_token, only: %i[save_progress update upload_image complete_mission random_mission]
+  skip_before_action :verify_authenticity_token,
+                     only: %i[save_progress update upload_image complete_mission random_mission]
 
   def index
     @missions_with_photos = Mission.with_attached_image.where.not(walk_id: nil).order(created_at: :desc)
     respond_to do |format|
       format.html
-      format.json { render json: @missions_with_photos.map { |m| { id: m.id, title: m.title, image_url: m.image.attached? ? url_for(m.image) : nil } } }
+      format.json do
+        render json: @missions_with_photos.map { |m|
+          { id: m.id, title: m.title, image_url: m.image.attached? ? url_for(m.image) : nil }
+        }
+      end
     end
   end
 
@@ -28,7 +33,8 @@ class WalkingsController < ApplicationController
   end
 
   def new
-    @walk = current_user.walks.where(end_at: nil).order(created_at: :desc).first_or_create(start_at: Time.current, steps: 0, duration: 0)
+    @walk = current_user.walks.where(end_at: nil).order(created_at: :desc).first_or_create(start_at: Time.current,
+                                                                                           steps: 0, duration: 0)
 
     # 今回の散歩でまだクリアしていないIDから抽選
     @current_mission = Mission.where.not(id: @walk.mission_ids).order('RANDOM()').first

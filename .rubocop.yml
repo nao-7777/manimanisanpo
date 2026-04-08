@@ -38,3 +38,20 @@ Metrics/BlockLength:
 # frozen_string_literal を不要にする
 Style/FrozenStringLiteralComment:
   Enabled: false
+
+# クラス冒頭の説明コメントを不要にする
+Style/Documentation:
+  Enabled: false
+
+# 文字列のダブルクォートを許可する
+Style/StringLiterals:
+  Enabled: false
+
+# 1行の長さ制限を 160文字まで緩和
+Layout/LineLength:
+  Max: 160
+
+# テストファイルでの abort (Rails/Exit) を許可
+Rails/Exit:
+  Exclude:
+    - 'spec/rails_helper.rb'

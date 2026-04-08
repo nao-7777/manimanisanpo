@@ -90,8 +90,8 @@ gem 'net-pop', require: false
 gem 'net-smtp', require: false
 
 group :development, :test do
-  gem 'rspec-rails'
   gem 'factory_bot_rails' # (推奨) テストデータ作成用
+  gem 'rspec-rails'
   gem 'rubocop-performance', require: false
   gem 'rubocop-rails', require: false
 end
