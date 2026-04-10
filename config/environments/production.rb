@@ -40,4 +40,8 @@ Rails.application.configure do
     authentication:       'plain',
     enable_starttls_auto: true
   }
+
+  #ドメイン
+  config.hosts << "manimanisanpo.com"
+  config.hosts << "www.manimanisanpo.com"
 end

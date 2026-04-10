@@ -13,10 +13,8 @@
 
 <div class="h-[100dvh] w-full flex flex-col bg-gradient-to-b from-[#ffe2ea] via-[#ffe2ea] via-20% to-[#97DBC1] bg-fixed px-6 overflow-hidden">
   
-  <%# ヘッダー分の高さを絶対に確保（重なり防止） %>
   <div class="h-16 md:h-20 flex-shrink-0"></div>
 
-  <%# 残りのエリアでカードを中央配置 %>
   <div class="flex-grow flex items-center justify-center py-4">
     <div class="w-full max-w-md max-h-full z-10 relative">
 
@@ -24,7 +22,6 @@
         <%= render "devise/shared/flash_messages" %>
       </div>
 
-      <%# カード内の余白を微調整して1画面に収める %>
       <div class="bg-white/70 py-7 px-8 md:px-10 rounded-[2.5rem] shadow-xl backdrop-blur-md overflow-hidden"
            style="background-color: rgba(255, 255, 255, 0.75);">
         

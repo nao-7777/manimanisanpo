@@ -1,9 +1,7 @@
 <div class="h-[100dvh] w-full flex flex-col bg-gradient-to-b from-[#ffe2ea] via-[#ffe2ea] via-20% to-[#97DBC1] bg-fixed px-6 overflow-hidden">
   
-  <%# ヘッダー分の高さを「絶対に」確保 %>
   <div class="h-16 md:h-20 flex-shrink-0"></div>
 
-  <%# 残りのエリアでカードを中央配置し、かつ最大高さを指定 %>
   <div class="flex-grow flex items-center justify-center py-4">
     <div class="w-full max-w-md max-h-full z-10 relative">
 
@@ -11,7 +9,6 @@
         <%= render "devise/shared/error_messages", resource: resource %>
       </div>
 
-      <%# カードのパディングを 8 から 7 に微調整（見た目のゆとりは維持しつつ高さを数ミリ削る） %>
       <div class="bg-white/70 py-7 px-8 md:px-10 rounded-[2.5rem] shadow-xl backdrop-blur-md overflow-hidden"
            style="background-color: rgba(255, 255, 255, 0.75);">
         

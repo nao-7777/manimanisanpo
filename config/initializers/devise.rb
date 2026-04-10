@@ -22,10 +22,10 @@ Devise.setup do |config|
   config.responder.redirect_status = :see_other
 
   # Google認証の設定を追加
-  config.omniauth :google_oauth2, 
-                  ENV['GOOGLE_CLIENT_ID'], 
-                  ENV['GOOGLE_CLIENT_SECRET'], 
-                  scope: 'email,profile', 
+  config.omniauth :google_oauth2,
+                  ENV.fetch('GOOGLE_CLIENT_ID', nil),
+                  ENV.fetch('GOOGLE_CLIENT_SECRET', nil),
+                  scope: 'email,profile',
                   prompt: 'select_account',
                   image_aspect_ratio: 'square',
                   image_size: 50
