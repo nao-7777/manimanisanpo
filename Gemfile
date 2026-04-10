@@ -95,3 +95,7 @@ group :development, :test do
   gem 'rubocop-performance', require: false
   gem 'rubocop-rails', require: false
 end
+
+gem 'omniauth-google-oauth2'
+gem 'omniauth-rails_csrf_protection'
+

@@ -11,7 +11,8 @@ Rails.application.routes.draw do
   # 3. デバイスの設定
   devise_for :users, controllers: {
     registrations: 'users/registrations',
-    passwords: 'users/passwords'
+    passwords: 'users/passwords',
+    omniauth_callbacks: 'users/omniauth_callbacks'
   }
 
   resources :users, only: %i[index show edit update]

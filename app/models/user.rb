@@ -1,37 +1,44 @@
 class User < ApplicationRecord
   has_many :walks, dependent: :destroy
+
+  # :omniauthable と omniauth_providers を追加
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable, :confirmable
+         :recoverable, :rememberable, :validatable, :confirmable,
+         :omniauthable, omniauth_providers: %i[google_oauth2]
 
   has_many :user_characters, dependent: :destroy
   has_many :characters, through: :user_characters
 
   after_create :add_default_character
 
-  # ホーム画面で表示する狐の画像パスを返す
-  def current_koyoi_image
-    # ユーザーに紐づく最初のキャラクター（金宵）を取得
-    active_char = user_characters.first
+  # --- SNSログイン用のメソッド ---
+  def self.from_omniauth(auth)
+    # providerとuidでユーザーを検索し、なければ作成する
+    # SNS経由の場合はパスワード入力がないため、ランダムなパスワードを生成
+    where(provider: auth.provider, uid: auth.uid).first_or_create do |user|
+      user.email = auth.info.email
+      user.password = Devise.friendly_token[0, 20]
+      # SNSログインの場合、メール認証(confirmable)をスキップさせる設定
+      user.skip_confirmation! if user.respond_to?(:skip_confirmation!)
+    end
+  end
+  # ----------------------------
 
+  def current_koyoi_image
+    active_char = user_characters.first
     if active_char
-      # UserCharacterモデル側の判定ロジックを呼び出す
       active_char.current_avatar_path
     else
-      # 万が一キャラがいない時のフォールバック画像
       'characters/koyoi_v1.png'
     end
   end
 
   private
 
-  # 新規登録時に「金宵」を自動でセット
   def add_default_character
-    # 名前で検索（DBに金宵のデータが既にある前提）
     first_char = Character.find_by('name LIKE ?', '%金宵%')
-
     return unless first_char
 
-    # 初期レベル1、初期キャラキー "金宵" で作成
     user_characters.create(
       character: first_char,
       level: 1,

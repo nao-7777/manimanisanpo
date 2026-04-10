@@ -17,6 +17,8 @@ services:
       - "3000:3000"
     depends_on:
       - db
+    env_file:
+      - .env
     environment:
       DATABASE_URL: postgresql://postgres:password@db:5432/manimanisanpo_development
     networks:
