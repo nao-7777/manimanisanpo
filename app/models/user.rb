@@ -18,6 +18,7 @@ class User < ApplicationRecord
     where(provider: auth.provider, uid: auth.uid).first_or_create do |user|
       user.email = auth.info.email
       user.password = Devise.friendly_token[0, 20]
+      user.remember_me = true
       # SNSログインの場合、メール認証(confirmable)をスキップさせる設定
       user.skip_confirmation! if user.respond_to?(:skip_confirmation!)
     end

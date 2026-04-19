@@ -79,8 +79,8 @@
   <%# --- 下部リンク --- %>
   <div class="flex-shrink-0 w-full pb-4 z-10 text-center">
     <div class="flex gap-6 justify-center text-[11px] text-gray-500 font-bold mb-1">
-      <p class="hover:text-[#4db6ac] cursor-pointer transition-colors decoration-[#4db6ac] hover:underline underline-offset-4">利用規約</p>
-      <p class="hover:text-[#4db6ac] cursor-pointer transition-colors decoration-[#4db6ac] hover:underline underline-offset-4">プライバシーポリシー</p>
+      <%= link_to '利用規約', terms_path, class: 'hover:text-[#4db6ac] cursor-pointer transition-colors decoration-[#4db6ac] hover:underline underline-offset-4' %>
+      <%= link_to 'プライバシーポリシー', privacy_path, class: 'hover:text-[#4db6ac] cursor-pointer transition-colors decoration-[#4db6ac] hover:underline underline-offset-4' %>
     </div>
     <p class="text-[10px] text-gray-400 font-medium italic tracking-[0.15em]">Everyday is an Adventure</p>
   </div>

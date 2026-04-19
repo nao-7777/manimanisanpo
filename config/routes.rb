@@ -52,4 +52,8 @@ Rails.application.routes.draw do
       post :confirm_evolution
     end
   end
+  
+  # 7. 利用規約・プライバシーポリシー
+  get 'terms', to: 'static_pages#terms'
+  get 'privacy', to: 'static_pages#privacy'
 end

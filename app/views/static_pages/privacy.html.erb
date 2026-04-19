@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8">
+    <title>プライバシーポリシー | manimanisanpo</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%# --- デザインが当たらない問題を解決するための強制読み込み --- %>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+      /* フォントの微調整 */
+      @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap');
+      body { font-family: 'Noto Sans JP', sans-serif; }
+    </style>
+  </head>
+  <body class="bg-white text-gray-800 antialiased">
+
+    <%# --- 右上の閉じる(×)ボタン --- %>
+    <div class="fixed top-4 right-4 z-50">
+      <%# root_path から :back（またはマイページのパス）に変更 %>
+      <%= link_to :back, class: "flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors shadow-sm border border-gray-200" do %>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 text-gray-600">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      <% end %>
+    </div>
+
+    <%# --- メインコンテンツ --- %>
+    <div class="container mx-auto px-6 pt-20 pb-20 max-w-2xl">
+      
+      <div class="text-center mb-12">
+        <h1 class="text-3xl font-black text-gray-900 tracking-tighter">プライバシーポリシー</h1>
+        <div class="w-12 h-1 bg-[#65C7A4] mx-auto mt-4 rounded-full"></div>
+      </div>
+
+      <div class="space-y-12 text-sm md:text-base leading-relaxed text-gray-700">
+        <p class="text-gray-600">
+          manimanisanpo（以下，「当サービス」といいます。）は，本サービス上で提供するサービスにおける，ユーザーの個人情報の取扱いについて，以下のとおりプライバシーポリシーを定めます。
+        </p>
+
+        <section>
+          <h2 class="text-xl font-bold mb-4 flex items-center text-gray-900">
+            <span class="w-1.5 h-6 bg-[#65C7A4] mr-3 rounded-full"></span>
+            個人情報の取得と利用目的
+          </h2>
+          <div class="pl-4 border-l-2 border-gray-50 ml-1">
+            <p>当サービスは，以下の目的で個人情報を取得・利用いたします。</p>
+            <ul class="list-disc ml-6 mt-4 space-y-3">
+              <li>Googleアカウント連携による本人確認および認証</li>
+              <li>本サービスの提供・運営のため</li>
+              <li>ユーザーからのお問い合わせへの回答</li>
+            </ul>
+          </div>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-bold mb-4 flex items-center text-gray-900">
+            <span class="w-1.5 h-6 bg-[#65C7A4] mr-3 rounded-full"></span>
+            Google APIのデータ利用について
+          </h2>
+          <div class="pl-4 border-l-2 border-gray-50 ml-1">
+            <p>本サービスはGoogleログイン機能を利用しています。取得したユーザーのメールアドレスおよび氏名は、アカウント作成およびログイン認証の目的のみに使用し、第三者への提供は行いません。</p>
+          </div>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-bold mb-4 flex items-center text-gray-900">
+            <span class="w-1.5 h-6 bg-[#65C7A4] mr-3 rounded-full"></span>
+            免責事項
+          </h2>
+          <div class="pl-4 border-l-2 border-gray-50 ml-1">
+            <p class="text-gray-500 text-xs italic">
+              当サービスが提供する情報の利用により発生した一切の損害について，当サービスは責任を負わないものとします。
+            </p>
+          </div>
+        </section>
+      </div>
+
+      <%# 署名 %>
+      <div class="mt-20 pt-8 border-t border-gray-100 text-right text-xs text-gray-400 font-bold">
+        <p>2026年4月19日 制定</p>
+        <p class="mt-1 font-black text-gray-500">manimanisanpo 運営</p>
+      </div>
+
+    </div>
+  </body>
+</html>

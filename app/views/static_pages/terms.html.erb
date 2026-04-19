@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8">
+    <title>利用規約 | manimanisanpo</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%# --- 強制的にTailwindを読み込むCDN --- %>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-white text-gray-800 antialiased font-sans">
+
+    <%# --- 右上の閉じる(×)ボタン --- %>
+    <div class="fixed top-4 right-4 z-50">
+      <%# root_path から :back（またはマイページのパス）に変更 %>
+      <%= link_to :back, class: "flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors shadow-sm border border-gray-200" do %>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 text-gray-600">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      <% end %>
+    </div>
+
+    <%# --- メインコンテンツ --- %>
+    <div class="container mx-auto px-6 pt-20 pb-20 max-w-2xl">
+      <div class="text-center mb-12">
+        <h1 class="text-3xl font-black text-gray-900 tracking-tighter">利用規約</h1>
+        <div class="w-10 h-1 bg-[#65C7A4] mx-auto mt-3 rounded-full"></div>
+      </div>
+
+      <div class="space-y-10 text-sm md:text-base leading-relaxed text-gray-700">
+        <p>この利用規約（以下，「本規約」といいます。）は，manimanisanpo（以下，「当サービス」といいます。）が提供するサービス（以下，「本サービス」といいます。）の利用条件を定めるものです。</p>
+
+        <section>
+          <h2 class="font-bold text-lg mb-3 flex items-center text-gray-900">
+            <span class="w-1.5 h-6 bg-[#65C7A4] mr-3 rounded-full"></span>
+            第1条（適用）
+          </h2>
+          <p class="pl-4">本規約は，ユーザーと当サービスとの間の本サービスの利用に関わる一切の関係に適用されるものとします。</p>
+        </section>
+
+        <section>
+          <h2 class="font-bold text-lg mb-3 flex items-center text-gray-900">
+            <span class="w-1.5 h-6 bg-[#65C7A4] mr-3 rounded-full"></span>
+            第2条（禁止事項）
+          </h2>
+          <ul class="list-disc ml-10 mt-3 space-y-2">
+            <li>法令または公序良俗に違反する行為</li>
+            <li>本サービスの運営を妨害するおそれのある行為</li>
+            <li>他のユーザーに関する個人情報等を収集または蓄積する行為</li>
+            <li>当サービス内の画像、文章等を無断で転載・二次利用する行為</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 class="font-bold text-lg mb-3 flex items-center text-gray-900">
+            <span class="w-1.5 h-6 bg-[#65C7A4] mr-3 rounded-full"></span>
+            第3条（免責事項）
+          </h2>
+          <p class="pl-4 text-gray-500 text-sm leading-relaxed">当サービスは，本サービスに関して，ユーザーと他のユーザーまたは第三者との間において生じた取引，連絡または紛争等について一切責任を負いません。また、本サービスの利用により発生したいかなる損害についても、当サービスは責任を負わないものとします。</p>
+        </section>
+      </div>
+
+      <div class="mt-20 pt-8 border-t border-gray-100 text-right text-xs text-gray-400 font-bold">
+        <p>2026年4月19日 制定</p>
+        <p class="mt-1">manimanisanpo 運営</p>
+      </div>
+    </div>
+  </body>
+</html>
