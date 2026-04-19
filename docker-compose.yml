@@ -2,7 +2,7 @@ services:
   db:
     image: postgres:15
     volumes:
-      - ./tmp/db:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql/data
     environment:
       POSTGRES_PASSWORD: password
     networks:
@@ -25,3 +25,6 @@ services:
 networks:
   app-network:
     driver: bridge
+
+volumes:
+  db_data:
