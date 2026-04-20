@@ -2,7 +2,7 @@ module ApplicationHelper
   def default_meta_tags
     {
       site: 'まにまに散歩',
-      title: '神様と歩く、いつもの道。',
+      title: '',
       reverse: true,
       separator: '|',
       description: '目的地のない散歩は、もう終わり。あなたの何気ない歩みが、姿を忘れてしまった「土地神様」の力になります。',
