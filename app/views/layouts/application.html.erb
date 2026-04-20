@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja" class="h-[100svh] overflow-hidden">
   <head>
-    <title>ManimaniSanpo</title>
-    <%# 1. viewport-fit=cover を削除。これによりPWAが勝手にセーフエリアを侵食するのを防ぎます %>
+    <%= display_meta_tags(default_meta_tags) %>
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -13,7 +12,7 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <%# 外部ライブラリ（変更なし） %>
+    <%# 外部ライブラリ %>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -24,7 +23,6 @@
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     
     <style>
-      /* 全体をブラウザの表示領域（svh）に固定し、変な伸びを一切禁止する */
       html, body {
         height: 100svh;
         overflow: hidden;
