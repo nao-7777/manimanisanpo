@@ -8,6 +8,10 @@ module ApplicationHelper
       description: '目的地のない散歩は、もう終わり。あなたの何気ない歩みが、姿を忘れてしまった「土地神様」の力になります。',
       keywords: '散歩,土地神様,育成,ウォーキング',
       canonical: request.original_url,
+      icon: [
+        { href: image_url('icon.png') }, # 通常のファビコン
+        { href: image_url('icon.png'), rel: 'apple-touch-icon', sizes: '180x180' } # iPhone用
+      ],
       og: {
         site_name: 'まにまに散歩',
         title: :title,
